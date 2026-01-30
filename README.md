@@ -29,7 +29,7 @@ A comprehensive telemedicine backend API built with Django and Django REST Frame
 - Document uploads
 
 ### Video Consultations
-- Jitsi Meet integration
+- Whereby integration
 - Secure video rooms
 - Session management
 
@@ -40,8 +40,8 @@ A comprehensive telemedicine backend API built with Django and Django REST Frame
 | Framework | Django 4.2+ |
 | API | Django REST Framework |
 | Authentication | JWT (Simple JWT) |
-| Database | SQLite (dev) / PostgreSQL (prod) |
-| Video | Jitsi Meet |
+| Database |  PostgreSQL  |
+| Video | Whereby |
 | Email | SMTP / Console |
 
 ## Prerequisites
