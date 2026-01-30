@@ -1,0 +1,174 @@
+{% extends 'dashboard/base_patient.html' %}
+{% load static %}
+
+{% block title %}Medical History{% endblock %}
+{% block extra_css %}
+<style>
+    [aria-expanded="true"] .ti-chevron-down {
+        transform: rotate(180deg);
+    }
+    .ti-chevron-down {
+        transition: transform 0.2s ease;
+    }
+    .bg-primary-light {
+        background-color: rgba(13, 110, 253, 0.1);
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="content">
+    <div class="mb-3 border-bottom pb-3 d-flex justify-content-between align-items-center">
+        <div>
+            <h4 class="fw-bold mb-0">Medical History</h4>
+            <p class="text-muted mb-0">Track your medical events and procedures</p>
+        </div>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addHistoryModal">
+            <i class="ti ti-plus me-1"></i> Add Entry
+        </button>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <!-- Sidebar Navigation -->
+                {% include 'dashboard/partials/_settings_sidebar.html' %}
+
+                <!-- Main Content -->
+                <div class="col-lg-9">
+                    <div class="border-1 border-start ps-4">
+                        
+                        {% if history %}
+                        <div class="timeline">
+                            {% for entry in history %}
+                            <div class="card mb-3 border-start border-4 
+                                {% if entry.event_type == 'diagnosis' %}border-warning
+                                {% elif entry.event_type == 'surgery' %}border-danger
+                                {% elif entry.event_type == 'hospitalization' %}border-info
+                                {% elif entry.event_type == 'vaccination' %}border-success
+                                {% else %}border-secondary{% endif %}">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="badge 
+                                                {% if entry.event_type == 'diagnosis' %}bg-warning
+                                                {% elif entry.event_type == 'surgery' %}bg-danger
+                                                {% elif entry.event_type == 'hospitalization' %}bg-info
+                                                {% elif entry.event_type == 'vaccination' %}bg-success
+                                                {% else %}bg-secondary{% endif %} me-2">
+                                                {{ entry.get_event_type_display }}
+                                            </span>
+                                            <small class="text-muted">
+                                                <i class="ti ti-calendar me-1"></i>{{ entry.event_date|date:"M d, Y" }}
+                                            </small>
+                                        </div>
+                                        <form action="{% url 'dashboard:patient_medical_history_delete' entry.pk %}" method="POST" class="d-inline" onsubmit="return confirm('Delete this entry?');">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="ti ti-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    
+                                    <h6 class="fw-bold mb-2">{{ entry.title }}</h6>
+                                    
+                                    {% if entry.description %}
+                                    <p class="text-muted mb-2">{{ entry.description }}</p>
+                                    {% endif %}
+                                    
+                                    <div class="d-flex flex-wrap gap-3 text-muted small">
+                                        {% if entry.doctor_name %}
+                                        <span><i class="ti ti-stethoscope me-1"></i>{{ entry.doctor_name }}</span>
+                                        {% endif %}
+                                        {% if entry.hospital_name %}
+                                        <span><i class="ti ti-building-hospital me-1"></i>{{ entry.hospital_name }}</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    {% if entry.notes %}
+                                    <div class="mt-2 p-2 bg-light rounded">
+                                        <small class="text-muted"><i class="ti ti-note me-1"></i>{{ entry.notes }}</small>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-center py-5">
+                            <i class="ti ti-history fs-1 text-muted mb-3"></i>
+                            <h5 class="text-muted">No Medical History</h5>
+                            <p class="text-muted">Start tracking your medical events by adding an entry.</p>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addHistoryModal">
+                                <i class="ti ti-plus me-1"></i> Add First Entry
+                            </button>
+                        </div>
+                        {% endif %}
+                        
+                    </div>
+                </div> 
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add History Modal -->
+<div class="modal fade" id="addHistoryModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="ti ti-plus me-2"></i>Add Medical History Entry</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="" method="POST">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Event Type <span class="text-danger">*</span></label>
+                            <select name="event_type" class="form-select" required>
+                                <option value="">Select type</option>
+                                <option value="diagnosis">Diagnosis</option>
+                                <option value="surgery">Surgery</option>
+                                <option value="hospitalization">Hospitalization</option>
+                                <option value="vaccination">Vaccination</option>
+                                <option value="injury">Injury</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Date <span class="text-danger">*</span></label>
+                            <input type="date" name="event_date" class="form-control" required>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Title <span class="text-danger">*</span></label>
+                            <input type="text" name="title" class="form-control" placeholder="e.g., Appendectomy, COVID-19 Vaccination" required>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea name="description" class="form-control" rows="2" placeholder="Describe the event"></textarea>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Doctor Name</label>
+                            <input type="text" name="doctor_name" class="form-control" placeholder="Dr. Name">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Hospital/Clinic</label>
+                            <input type="text" name="hospital_name" class="form-control" placeholder="Hospital name">
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Notes</label>
+                            <textarea name="notes" class="form-control" rows="2" placeholder="Additional notes"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ti ti-plus me-1"></i> Add Entry
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

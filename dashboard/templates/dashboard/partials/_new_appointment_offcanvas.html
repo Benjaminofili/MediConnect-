@@ -1,0 +1,116 @@
+{% load static %}
+
+<!-- New Appointment Offcanvas - MOBILE FRIENDLY -->
+<div class="offcanvas offcanvas-offset offcanvas-end" tabindex="-1" id="new_appointment">
+    
+    <!-- HEADER (Fixed) -->
+    <div class="offcanvas-header border-bottom py-3">
+        <h5 class="offcanvas-title fs-18 fw-bold mb-0">Book Appointment</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    
+    <!-- FORM -->
+    <form method="POST" action="{% url 'dashboard:patient_create_appointment' %}" class="d-flex flex-column h-100">
+        {% csrf_token %}
+        
+        <!-- BODY (Scrollable) -->
+        <div class="offcanvas-body">
+            <div class="row">
+                <!-- Doctor Selection -->
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">
+                            Doctor <span class="text-danger">*</span>
+                        </label>
+                        <select name="doctor" class="form-select" required>
+                            <option value="">Select Doctor</option>
+                            {% for doctor in doctors %}
+                            <option value="{{ doctor.id }}">
+                                Dr. {{ doctor.user.full_name }} 
+                                {% if doctor.specialization %}({{ doctor.specialization.name }}){% endif %}
+                            </option>
+                            {% empty %}
+                            <option value="" disabled>No doctors available</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Date -->
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">
+                            Date <span class="text-danger">*</span>
+                        </label>
+                        <input type="date" name="slot_date" class="form-control" required 
+                               min="{{ today|date:'Y-m-d' }}">
+                    </div>
+                </div>
+
+                <!-- Time -->
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">
+                            Time <span class="text-danger">*</span>
+                        </label>
+                        <input type="time" name="slot_start" class="form-control" required>
+                    </div>
+                </div>
+
+                <!-- Duration -->
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Duration</label>
+                        <select name="duration" class="form-select">
+                            <option value="15">15 minutes</option>
+                            <option value="30" selected>30 minutes</option>
+                            <option value="45">45 minutes</option>
+                            <option value="60">1 hour</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Appointment Type -->
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Appointment Type</label>
+                        <select name="appointment_type" class="form-select">
+                            <option value="online" selected> Online Consultation</option>
+                            <option value="in_person"> In-Person Visit</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Reason -->
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Reason for Visit</label>
+                        <textarea name="reason" rows="2" class="form-control" 
+                                  placeholder="Brief reason for appointment..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Symptoms -->
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Symptoms</label>
+                        <textarea name="symptoms" rows="3" class="form-control" 
+                                  placeholder="Describe your symptoms in detail..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FOOTER (Fixed at bottom) -->
+        <div class="offcanvas-footer border-top p-3 bg-white">
+            <div class="d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-light" data-bs-dismiss="offcanvas">
+                    Cancel
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="ti ti-calendar-plus me-1"></i>Book Appointment
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

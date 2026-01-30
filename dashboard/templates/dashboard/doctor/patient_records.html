@@ -1,0 +1,189 @@
+{% extends 'dashboard/base_doctor.html' %}
+{% load static %}
+
+{% block title %}Patient Records - {{ patient.full_name }}{% endblock %}
+
+{% block content %}
+<div class="content">
+    <!-- Header -->
+    <div class="mb-3 border-bottom pb-3 d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <a href="{% url 'dashboard:doctor_patient_detail' patient.pk %}" class="btn btn-light me-3">
+                <i class="ti ti-arrow-left"></i>
+            </a>
+            <div>
+                <h4 class="fw-bold mb-0">Medical Records</h4>
+                <p class="text-muted mb-0">{{ patient.full_name }} - {{ patient.email }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Patient Info Card -->
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="ti ti-user me-2"></i>Patient Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        {% if patient.profile_picture %}
+                        <img src="{{ patient.profile_picture.url }}" class="rounded-circle" width="80" height="80" alt="Profile">
+                        {% else %}
+                        <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width:80px;height:80px;">
+                            <i class="ti ti-user fs-1 text-muted"></i>
+                        </div>
+                        {% endif %}
+                        <h5 class="mt-2 mb-0">{{ patient.full_name }}</h5>
+                        <small class="text-muted">{{ patient.email }}</small>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="info-list">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Phone:</span>
+                            <span>{{ patient.phone|default:"-" }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Gender:</span>
+                            <span>{{ patient.gender|default:"-"|title }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">DOB:</span>
+                            <span>{{ patient.date_of_birth|date:"M d, Y"|default:"-" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Health Profile -->
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0"><i class="ti ti-heart-rate-monitor me-2"></i>Health Profile</h6>
+                </div>
+                <div class="card-body">
+                    {% if health_profile %}
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="border rounded p-3 text-center">
+                                <h4 class="text-danger mb-0">{{ health_profile.blood_type|default:"-" }}</h4>
+                                <small class="text-muted">Blood Type</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="border rounded p-3 text-center">
+                                <h4 class="text-primary mb-0">{{ health_profile.height_cm|default:"-" }}</h4>
+                                <small class="text-muted">Height (cm)</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="border rounded p-3 text-center">
+                                <h4 class="text-info mb-0">{{ health_profile.weight_kg|default:"-" }}</h4>
+                                <small class="text-muted">Weight (kg)</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Allergies</label>
+                            <p class="mb-0">{{ health_profile.allergies|default:"None reported" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Chronic Conditions</label>
+                            <p class="mb-0">{{ health_profile.chronic_conditions|default:"None reported" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Current Medications</label>
+                            <p class="mb-0">{{ health_profile.current_medications|default:"None reported" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Smoking/Alcohol</label>
+                            <p class="mb-0">{{ health_profile.get_smoking_status_display }} / {{ health_profile.get_alcohol_consumption_display }}</p>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="ti ti-alert-circle fs-2 mb-2"></i>
+                        <p class="mb-0">No health profile data available</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Medical History -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0"><i class="ti ti-history me-2"></i>Medical History</h6>
+                </div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    {% if medical_history %}
+                    {% for entry in medical_history %}
+                    <div class="border-start border-3 
+                        {% if entry.event_type == 'diagnosis' %}border-warning
+                        {% elif entry.event_type == 'surgery' %}border-danger
+                        {% elif entry.event_type == 'vaccination' %}border-success
+                        {% else %}border-secondary{% endif %} ps-3 mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span class="badge bg-light text-dark">{{ entry.get_event_type_display }}</span>
+                            <small class="text-muted">{{ entry.event_date|date:"M d, Y" }}</small>
+                        </div>
+                        <h6 class="mb-1 mt-1">{{ entry.title }}</h6>
+                        {% if entry.description %}
+                        <small class="text-muted">{{ entry.description|truncatewords:20 }}</small>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="ti ti-history fs-2 mb-2"></i>
+                        <p class="mb-0">No medical history recorded</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Documents -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="ti ti-file-medical me-2"></i>Medical Documents</h6>
+                </div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    {% if documents %}
+                    <div class="list-group list-group-flush">
+                        {% for doc in documents %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <div>
+                                <h6 class="mb-0">{{ doc.title }}</h6>
+                                <small class="text-muted">
+                                    {{ doc.get_document_type_display }} • 
+                                    {{ doc.uploaded_at|date:"M d, Y" }}
+                                </small>
+                            </div>
+                            <a href="{% url 'dashboard:doctor_patient_document_view' patient.pk doc.pk %}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                <i class="ti ti-eye"></i> View
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="ti ti-file-off fs-2 mb-2"></i>
+                        <p class="mb-0">No documents uploaded</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

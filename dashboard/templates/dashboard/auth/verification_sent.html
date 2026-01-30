@@ -1,0 +1,60 @@
+{% extends 'dashboard/auth/base_auth.html' %}
+{% load static %}
+
+{% block title %}Verify Your Email{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column justify-content-lg-center p-4 p-lg-0 pb-0 flex-fill">
+    <div class="mx-auto mb-4 text-center">
+        <img src="{% static 'dashboard/assets/img/logo.svg' %}" class="img-fluid" alt="Logo">
+    </div>
+    <div class="card border-1 p-lg-4 shadow-sm rounded-3 mb-4" style="max-width: 450px; margin: 0 auto;">
+        <div class="card-body text-center">
+            
+            <!-- Success Icon -->
+            <div class="mb-4">
+                <div class="rounded-circle d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10" 
+                     style="width: 80px; height: 80px;">
+                    <i class="ti ti-mail-check fs-1 text-success"></i>
+                </div>
+            </div>
+            
+            <!-- Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show text-start" role="alert">
+                        {{ message|safe }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <h4 class="mb-2 fw-bold">Check Your Email</h4>
+            <p class="text-muted mb-4">
+                We've sent a verification link to your email address.<br>
+                Please click the link to verify your account.
+            </p>
+            
+            <!-- Info Box -->
+            <div class="bg-light p-3 rounded mb-4 text-start">
+                <h6 class="fw-bold mb-2"><i class="ti ti-bulb text-warning me-1"></i> Tips:</h6>
+                <ul class="list-unstyled mb-0 fs-13 text-muted">
+                    <li class="mb-1"><i class="ti ti-check text-success me-1"></i> Check your spam/junk folder</li>
+                    <li class="mb-1"><i class="ti ti-check text-success me-1"></i> Make sure the email address is correct</li>
+                    <li><i class="ti ti-check text-success me-1"></i> The link expires in 24 hours</li>
+                </ul>
+            </div>
+            
+            <!-- Actions -->
+            <div class="d-grid gap-2">
+                <a href="{% url 'dashboard:resend_verification' %}" class="btn btn-outline-primary">
+                    <i class="ti ti-refresh me-1"></i> Resend Verification Email
+                </a>
+                <a href="{% url 'dashboard:login' %}" class="btn btn-light">
+                    <i class="ti ti-arrow-left me-1"></i> Back to Login
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

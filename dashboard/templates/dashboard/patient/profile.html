@@ -1,0 +1,236 @@
+{% extends 'dashboard/base_patient.html' %}
+{% load static %}
+
+{% block title %}Profile Settings{% endblock %}
+{% block extra_css %}
+<style>
+    [aria-expanded="true"] .ti-chevron-down {
+        transform: rotate(180deg);
+    }
+    .ti-chevron-down {
+        transition: transform 0.2s ease;
+    }
+    .bg-primary-light {
+        background-color: rgba(13, 110, 253, 0.1);
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="content">
+    <div class="mb-3 border-bottom pb-3">
+        <h4 class="fw-bold mb-0">Settings</h4>
+    </div>
+    
+    <div class="card" id="profilePage">
+        <div class="card-body">
+            <div class="row">
+                 <!-- Include Sidebar Partial -->
+                {% include 'dashboard/partials/_settings_sidebar.html' %}
+
+                <div class="col-lg-9">
+                    <div class="border-1 border-start ps-4">
+                        
+                        <form action="{% url 'dashboard:patient_profile' %}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            <h5 class="fw-bold pb-3 mb-4 border-1 border-bottom"> Basic Information </h5>
+                            
+                            <div class="row border-bottom mb-3">
+                                <div class="col-lg-12">
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-2">
+                                            <label class="form-label mb-0">Profile Image</label>
+                                        </div>
+                                        <div class="col-lg-10">
+                                            <div class="profile-container">
+                                                {% if user.profile_picture %}
+                                                    <img src="{{ user.profile_picture.url }}" alt="Profile" id="profileImagePreview">
+                                                {% else %}
+                                                    <img src="{% static 'dashboard/assets/img/users/user-08.jpg' %}" alt="Profile" id="profileImagePreview">
+                                                {% endif %}
+                                                
+                                                <div class="overlay-btn">
+                                                    <button type="button" class="btn btn-link text-white p-0 border-0" id="uploadTrigger" style="text-decoration: none;">
+                                                        <i class="ti ti-photo fs-10"></i>
+                                                    </button>
+                                                </div>
+                                                <input type="file" id="profileUpload" name="profile_picture" accept="image/*" style="display: none;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-4">
+                                            <label class="form-label mb-0">First Name</label>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control" name="first_name" value="{{ user.first_name }}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-4">
+                                            <label class="form-label mb-0">Last Name</label>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control" name="last_name" value="{{ user.last_name }}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-4">
+                                            <label class="form-label mb-0">Email</label>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control" value="{{ user.email }}" readonly disabled>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-4">
+                                            <label class="form-label mb-0">Phone</label>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control" name="phone" value="{{ user.phone }}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-4">
+                                            <label class="form-label mb-0">Date of Birth</label>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <input type="date" class="form-control" name="date_of_birth" value="{{ user.date_of_birth|date:'Y-m-d' }}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-4">
+                                            <label class="form-label mb-0">Gender</label>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <select class="select form-control" name="gender">
+                                                <option value="male" {% if user.gender == 'male' %}selected{% endif %}>Male</option>
+                                                <option value="female" {% if user.gender == 'female' %}selected{% endif %}>Female</option>
+                                                <option value="other" {% if user.gender == 'other' %}selected{% endif %}>Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Medical info is now managed on the dedicated Health Profile page -->
+                            <div class="row border-bottom mb-3 pb-3 ">
+                                <div class="col-lg-12">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <h5 class="fw-bold mb-1 text-primary">Health Profile</h5>
+                                            <p class="text-muted mb-0 fs-13">
+                                                Manage your blood group, allergies, chronic conditions and lifestyle details in one place.
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <a href="{% url 'dashboard:patient_health_profile' %}" class="btn btn-outline-primary btn-sm">
+                                                <i class="ti ti-notes-medical me-1"></i> Open Health Profile
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- <h5 class="fw-bold pb-3 mb-4 border-1 border-bottom"> Emergency Contact </h5>
+                            <div class="row mb-3">
+                                <div class="col-lg-6">
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-4">
+                                            <label class="form-label mb-0">Name</label>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control" name="emergency_contact_name" value="{{ user.patient_profile.emergency_contact_name }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-4">
+                                            <label class="form-label mb-0">Phone</label>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control" name="emergency_contact_phone" value="{{ user.patient_profile.emergency_contact_phone }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+
+                            <div class="d-flex justify-content-end align-items-center gap-2">
+                                <a href="{% url 'dashboard:patient_dashboard' %}" class="btn btn-light btn-md fs-13 fw-medium rounded"> Cancel </a>
+                                <button type="submit" class="btn btn-primary btn-md fs-13 fw-medium rounded"> Save Changes </button>
+                            </div>
+                        </form>
+                    </div>
+                </div> 
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'dashboard/assets/plugins/select2/js/select2.min.js' %}"></script>
+
+<script>
+    $(document).ready(function() {
+        // Initialize Select2 elements
+        if($('.select').length > 0) {
+            $('.select').select2({
+                minimumResultsForSearch: -1,
+                width: '100%'
+            });
+        }
+        
+       
+        
+        // ✅ Preview selected image immediately before upload
+        $('#profileUpload').one('change', function() {
+            const file = this.files[0];
+            if (file) {
+                // Validate file type
+                if (!file.type.match('image.*')) {
+                    alert('Please select an image file.');
+                    $(this).val('');
+                    return;
+                }
+                
+                // Validate file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Image size should be less than 5MB.');
+                    $(this).val('');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#profileImagePreview').attr('src', e.target.result);
+                };
+                reader.onerror = function() {
+                    alert('Error reading file. Please try again.');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+</script>
+{% endblock %}

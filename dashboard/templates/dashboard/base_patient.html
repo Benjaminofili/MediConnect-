@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{% block title %}Patient Dashboard{% endblock %} - Telemedicine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+     <!-- Favicon -->
+    <link rel="shortcut icon" href="{% static 'dashboard/assets/img/favicon.png' %}">
+
+    <!-- Apple Icon -->
+    <link rel="apple-touch-icon" href="{% static 'dashboard/assets/img/apple-icon.png' %}">
+
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'dashboard/assets/css/bootstrap.min.css' %}">
+
+    <!-- Tabler Icon CSS -->
+    <link rel="stylesheet" href="{% static 'dashboard/assets/plugins/tabler-icons/tabler-icons.min.css' %}">
+
+    <!-- Daterangepikcer CSS -->
+    <link rel="stylesheet" href="{% static 'dashboard/assets/plugins/daterangepicker/daterangepicker.css' %}">
+
+    <!-- Datetimepicker CSS -->
+    <link rel="stylesheet" href="{% static 'dashboard/assets/css/bootstrap-datetimepicker.min.css' %}">
+    
+    <!-- Select2 CSS -->
+    <link rel="stylesheet" href="{% static 'dashboard/assets/plugins/select2/css/select2.min.css' %}">
+
+    <!-- Simplebar CSS -->
+    <link rel="stylesheet" href="{% static 'dashboard/assets/plugins/simplebar/simplebar.min.css' %}">
+
+    <!-- Datatable CSS -->
+    <link rel="stylesheet" href="{% static 'dashboard/assets/css/dataTables.bootstrap5.min.css' %}">
+    
+    <!-- Fontawesome CSS -->
+    <link rel="stylesheet" href="{% static 'dashboard/assets/plugins/fontawesome/css/fontawesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/assets/plugins/fontawesome/css/all.min.css' %}">
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{% static 'dashboard/assets/css/style.css' %}" id="app-style">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <div class="main-wrapper">
+    
+        {% include 'dashboard/partials/_header_patient.html' %}
+        
+        {% include 'dashboard/partials/_sidebar_patient.html' %}
+        
+        <div class="page-wrapper">
+            {% block content %}
+            {% endblock %}
+
+            {% include 'dashboard/partials/_footer.html' %}
+        </div>
+        
+    </div>
+   <!-- jQuery -->
+    <script src="{% static 'dashboard/assets/js/jquery-3.7.1.min.js' %}" type="text/javascript"></script>
+
+    <!-- Bootstrap Core JS -->
+    <script src="{% static 'dashboard/assets/js/bootstrap.bundle.min.js' %}" type="text/javascript"></script>    
+
+    <!-- Simplebar JS -->
+    <script src="{% static 'dashboard/assets/plugins/simplebar/simplebar.min.js' %}" type="text/javascript"></script>
+
+    <!-- Daterangepikcer JS -->
+    <script src="{% static 'dashboard/assets/js/moment.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'dashboard/assets/plugins/daterangepicker/daterangepicker.js' %}" type="text/javascript"></script>
+
+    <!-- Datetimepicker JS -->
+    <script src="{% static 'dashboard/assets/js/moment.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'dashboard/assets/js/bootstrap-datetimepicker.min.js' %}" type="text/javascript"></script> 
+
+    <!-- Select2 JS -->
+    <script src="{% static 'dashboard/assets/plugins/select2/js/select2.min.js' %}" type="text/javascript"></script>
+
+    <!-- Datatable JS -->
+    <script src="{% static 'dashboard/assets/js/jquery.dataTables.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'dashboard/assets/js/dataTables.bootstrap5.min.js' %}" type="text/javascript"></script>
+
+    <!-- Main JS -->
+    <script src="{% static 'dashboard/assets/js/script.js' %}" type="text/javascript"></script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

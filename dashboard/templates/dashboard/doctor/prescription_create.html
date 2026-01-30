@@ -1,0 +1,56 @@
+{% extends 'dashboard/base_doctor.html' %}
+{% load static %}
+
+{% block title %}New Prescription{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="page-header">
+        <h3 class="page-title">Write Prescription for {{ patient.full_name }}</h3>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <form method="post">
+                {% csrf_token %}
+                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Diagnosis</label>
+                            <textarea class="form-control" rows="3" name="diagnosis" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Medicines</label>
+                            <textarea class="form-control" rows="6" name="medicines" placeholder="Medicine Name - Dosage - Frequency - Duration&#10;e.g. Paracetamol 500mg - 1 tablet - 3 times daily - 5 days" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Additional Instructions</label>
+                            <textarea class="form-control" rows="3" name="instructions" placeholder="Take after food, plenty of rest, etc."></textarea>
+                        </div>
+                    </div>
+                    <div class="card-footer text-end">
+                        <a href="{% url 'dashboard:doctor_patient_detail' patient.id %}" class="btn btn-light me-2">Cancel</a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="ti ti-check"></i> Save & Send Prescription
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <img src="{% if patient.profile_picture %}{{ patient.profile_picture.url }}{% else %}{% static 'dashboard/assets/img/users/user-08.jpg' %}{% endif %}" 
+                         class="rounded-circle mb-3" width="100" height="100">
+                    <h5>{{ patient.full_name }}</h5>
+                    <p class="text-muted">
+                        Age: {{ patient.patient_profile.get_age|default:"—" }} | 
+                        Blood: {{ patient.patient_profile.blood_type|default:"—" }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,123 @@
+{% extends 'dashboard/base_patient.html' %}
+{% load static %}
+
+{% block title %}My Prescriptions{% endblock %}
+
+
+{% block content %}
+<div class="content">
+
+    <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 pb-3 mb-3 border-1 border-bottom">
+        <div class="flex-grow-1">
+            <h4 class="fw-bold mb-0">Prescriptions</h4>
+        </div>
+        <div class="text-end d-flex">
+            <div class="dropdown me-1">
+                <a href="javascript:void(0);" class="btn btn-md fs-14 fw-normal border bg-white rounded text-dark d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                    Export<i class="ti ti-chevron-down ms-2"></i>
+                </a>
+                <ul class="dropdown-menu p-2">
+                    <li><a class="dropdown-item" href="{% url 'dashboard:patient_prescriptions_export' format='pdf' %}">Download as PDF</a></li>
+                    <li><a class="dropdown-item" href="{% url 'dashboard:patient_prescriptions_export' format='excel' %}">Download as Excel</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-3 mb-3">
+        <div class="search-set">
+            <div class="table-search d-flex align-items-center mb-0">
+                <div class="search-input">
+                    <a href="javascript:void(0);" class="btn-searchset"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-nowrap datatable">
+            <thead class="thead-light">
+                <tr>
+                    <th class="no-sort">Created Date</th>
+                    <th>Prescription ID</th>
+                    <th>Doctor</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+             <tbody>
+                {% for pres in prescriptions %}
+                <tr>
+                    <td>{{ pres.created_at|date:"d M Y" }}</td>
+                    <td>
+                        <span class="badge bg-primary-light fw-medium" style="color: black;">{{ pres.prescription_number }}</span>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <a href="{% url 'dashboard:patient_doctor_detail' pres.consultation.appointment.doctor.pk %}" class="avatar avatar-md me-2">
+                                {% if pres.consultation.appointment.doctor.user.profile_picture %}
+                                    <img src="{{ pres.consultation.appointment.doctor.user.profile_picture.url }}" alt="" class="rounded-circle">
+                                {% else %}
+                                    <img src="{% static 'dashboard/assets/img/doctors/doctor-default.jpg' %}" class="rounded-circle">
+                                {% endif %}
+                            </a>
+                            <div>
+                                <a href="{% url 'dashboard:patient_doctor_detail' pres.consultation.appointment.doctor.pk %}" class="text-dark fw-semibold">
+                                    Dr. {{ pres.consultation.appointment.doctor.user.full_name }}
+                                </a>
+                                <span class="text-body fs-13 fw-normal d-block">
+                                    {{ pres.consultation.appointment.doctor.specialization.name }}
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="action-item">
+                        <a href="{% url 'dashboard:patient_prescription_detail' pres.pk %}" class="me-2" title="View Prescription">
+                            <i class="ti ti-eye fs-16"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center py-5">
+                        <div class="text-muted">
+                            <i class="ti ti-file-off fs-1 d-block mb-3"></i>
+                            <h5>No prescriptions yet</h5>
+                            <p>You'll see prescriptions here after your consultations.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    </div>
+
+<div class="modal fade" id="delete_modal">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-body text-center position-relative">
+                <img src="{% static 'dashboard/assets/img/bg/delete-modal-bg-01.png' %}" alt="" class="img-fluid position-absolute top-0 start-0 z-0">
+                <img src="{% static 'dashboard/assets/img/bg/delete-modal-bg-02.png' %}" alt="" class="img-fluid position-absolute bottom-0 end-0 z-0">
+                <div class="mb-3 position-relative z-1">
+                    <span class="avatar avatar-lg bg-danger text-white"><i class="ti ti-trash fs-24"></i></span>
+                </div>
+                <h5 class="fw-bold mb-1 position-relative z-1">Delete Confirmation</h5>
+                <p class="mb-3 position-relative z-1">Are you sure want to delete?</p>
+                <div class="d-flex justify-content-center">
+                    <a href="javascript:void(0);" class="btn btn-light position-relative z-1 me-3" data-bs-dismiss="modal">Cancel</a>
+                    <button type="submit" class="btn btn-danger position-relative z-1" data-bs-dismiss="modal">Yes, Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'dashboard/assets/plugins/select2/js/select2.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/moment.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/bootstrap-datetimepicker.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/dataTables.bootstrap5.min.js' %}"></script>
+
+
+{% endblock %}

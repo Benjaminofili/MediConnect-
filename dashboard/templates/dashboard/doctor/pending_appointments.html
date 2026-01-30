@@ -1,0 +1,92 @@
+{% extends 'dashboard/base_doctor.html' %}
+
+{% block content %}
+<div class="content">
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="page-title">Pending Appointment Requests</h3>
+                <p class="text-muted">{{ pending_count }} appointment(s) waiting for your approval</p>
+            </div>
+            <div class="col-auto">
+                <a href="{% url 'dashboard:doctor_appointments' %}" class="btn btn-light">
+                    <i class="ti ti-calendar"></i> All Appointments
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% if appointments %}
+    <div class="row">
+        {% for appointment in appointments %}
+        <div class="col-lg-6 col-xl-4">
+            <div class="card">
+                <div class="card-body">
+                    <!-- Patient Info -->
+                    <div class="d-flex align-items-center mb-3">
+                        {% if appointment.patient.profile_picture %}
+                            <img src="{{ appointment.patient.profile_picture.url }}" alt="Patient" class="avatar avatar-md rounded-circle me-2">
+                        {% else %}
+                            <span class="avatar avatar-md bg-primary text-white rounded-circle me-2">
+                                {{ appointment.patient.first_name|first }}{{ appointment.patient.last_name|first }}
+                            </span>
+                        {% endif %}
+                        <div>
+                            <h6 class="mb-0">{{ appointment.patient.full_name }}</h6>
+                            <small class="text-muted">{{ appointment.patient.email }}</small>
+                        </div>
+                    </div>
+
+                    <!-- Appointment Details -->
+                    <div class="mb-3">
+                        <p class="mb-1">
+                            <i class="ti ti-calendar text-primary me-1"></i>
+                            <strong>{{ appointment.date|date:"D, d M Y" }}</strong>
+                        </p>
+                        <p class="mb-1">
+                            <i class="ti ti-clock text-primary me-1"></i>
+                            {{ appointment.start_time|time:"h:i A" }} - {{ appointment.end_time|time:"h:i A" }}
+                        </p>
+                        <p class="mb-1">
+                            <i class="ti ti-stethoscope text-primary me-1"></i>
+                            {{ appointment.reason|truncatewords:10|default:"No reason provided" }}
+                        </p>
+                        {% if appointment.video_room_url %}
+                            <span class="badge bg-info">Online</span>
+                        {% else %}
+                            <span class="badge bg-light text-dark">In-Person</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'dashboard:doctor_confirm_appointment' appointment.pk %}" class="btn btn-primary btn-sm flex-grow-1">
+                            <i class="ti ti-eye"></i> Review
+                        </a>
+                        <form method="POST" action="{% url 'dashboard:doctor_confirm_appointment' appointment.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="confirm">
+                            <button type="submit" class="btn btn-success btn-sm" title="Quick Confirm">
+                                <i class="ti ti-check"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="ti ti-calendar-check display-4 text-muted mb-3"></i>
+            <h5>No Pending Requests</h5>
+            <p class="text-muted">All appointment requests have been processed.</p>
+            <a href="{% url 'dashboard:doctor_appointments' %}" class="btn btn-primary">
+                View All Appointments
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,219 @@
+{% extends 'dashboard/base_patient.html' %}
+
+{% load static %}
+
+{% block title %}Appointments{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'dashboard/assets/plugins/select2/css/select2.min.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard/assets/plugins/daterangepicker/daterangepicker.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard/assets/css/bootstrap-datetimepicker.min.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard/assets/css/dataTables.bootstrap5.min.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content">
+
+    <!-- Page Header -->
+    <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 pb-3 mb-3 border-1 border-bottom">
+        <div class="flex-grow-1">
+            <h4 class="fw-bold mb-0">Appointments</h4>
+        </div>
+        <div class="text-end d-flex">
+            <!-- dropdown-->
+            <div class="dropdown me-1">
+                <a href="javascript:void(0);" class="btn btn-md fs-14 fw-normal border bg-white rounded text-dark d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                    Export<i class="ti ti-chevron-down ms-2"></i>
+                </a>
+                <ul class="dropdown-menu p-2">
+                    <li>
+                        <a class="dropdown-item" href="#">Download as PDF</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#">Download as Excel</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="bg-white border shadow-sm rounded px-1 pb-0 text-center d-flex align-items-center justify-content-center">
+                <a href="{% url 'dashboard:patient_appointments' %}" class="bg-light rounded p-1 d-flex align-items-center justify-content-center"> <i class="ti ti-list fs-14 text-body"></i></a>
+                <a href="{% url 'dashboard:patient_appointment_calendar' %}" class="bg-white rounded p-1 d-flex align-items-center justify-content-center"> <i class="ti ti-calendar-event fs-14 text-body"></i> </a>
+            </div>
+
+            <a href="javascript:void(0);" class="btn btn-primary ms-2 fs-13 btn-md" data-bs-toggle="offcanvas" data-bs-target="#new_appointment"><i class="ti ti-plus me-1"></i> New Appointment </a>
+        </div>
+    </div>
+    <!-- End Page Header -->
+
+    <!--  Start Filter -->
+    <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-3 mb-3">
+        <div class="search-set">
+            <div class="table-search d-flex align-items-center mb-0">
+                <div class="search-input">
+                </div>
+            </div>
+        </div>
+        <!-- <div class="dropdown">
+            <a href="javascript:void(0);" class="bg-white border rounded btn btn-md text-dark fs-14 py-1 align-items-center d-flex fw-normal" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                <i class="ti ti-filter text-gray-5 me-1"></i>Filter
+            </a>
+            <div class="dropdown-menu dropdown-lg dropdown-menu-end filter-dropdown p-0" id="filter-dropdown">
+                <div class="d-flex align-items-center justify-content-between border-bottom filter-header">
+                    <h4 class="mb-0 fw-bold">Filter</h4>
+                    <div class="d-flex align-items-center">
+                        <a href="javascript:void(0);" class="link-danger text-decoration-underline">Clear All</a>
+                    </div>
+                </div>
+                <form action="#" method="get">
+                    <div class="filter-body pb-0">
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <select name="status" class="form-select">
+                                <option value="">All Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="confirmed">Confirmed</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-footer d-flex align-items-center justify-content-end border-top">
+                        <a href="javascript:void(0);" class="btn btn-light btn-md me-2 fw-medium" id="close-filter">Close</a>
+                        <button type="submit" class="btn btn-primary btn-md fw-medium">Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div> -->
+    </div>
+    <!--  End Filter -->
+
+    <!--  Start Table -->
+    <div class="table-responsive">
+        <table class="table table-nowrap datatable">
+            <thead class="thead-light">
+                <tr>
+                    <th class="no-sort">
+                        Date & Time
+                    </th>
+                    <th>Doctor Name</th>
+                    <th>Mode</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <span class="avatar avatar-sm bg-light rounded me-2 d-flex align-items-center justify-content-center">
+                                <i class="ti ti-calendar text-dark"></i>
+                            </span>
+                            <div>
+                                <span class="fw-semibold d-block">{{ appointment.date|date:"d M Y" }}</span>
+                                <span class="text-muted fs-13">{{ appointment.start_time|time:"h:i A" }} - {{ appointment.end_time|time:"h:i A" }}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            {% if appointment.doctor.user.profile_picture %}
+                            <a href="{% url 'dashboard:patient_doctor_detail' pk=appointment.doctor.id %}" class="avatar avatar-md me-2">
+                                <img src="{{ appointment.doctor.user.profile_picture.url }}" alt="doctor" class="rounded-circle">
+                            </a>
+                            {% else %}
+                            <span class="avatar avatar-md bg-primary text-white rounded-circle me-2 d-flex align-items-center justify-content-center fw-semibold">
+                                {{ appointment.doctor.user.first_name|slice:":1"|upper }}{{ appointment.doctor.user.last_name|slice:":1"|upper }}
+                            </span>
+                            {% endif %}
+                            <div>
+                                <a href="{% url 'dashboard:patient_doctor_detail' pk=appointment.doctor.id %}" class="text-dark fw-semibold d-block">Dr. {{ appointment.doctor.user.last_name }}</a>
+                                <span class="text-body fs-13 fw-normal">{{ appointment.doctor.specialization.name|default:"General Practice" }}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        {% if appointment.video_room_url %}
+                        <span class="badge bg-info text-white rounded fw-medium fs-13">Online</span>
+                        {% else %}
+                        <span class="badge badge-soft-secondary text-dark rounded fw-medium fs-13">In-person</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if appointment.status == 'completed' %}
+                        <span class="badge badge-soft-primary rounded text-primary fw-medium fs-13">Checked Out</span>
+                        {% elif appointment.status == 'confirmed' %}
+                        <span class="badge badge-soft-success rounded text-success fw-medium fs-13">Confirmed</span>
+                        {% elif appointment.status == 'in_progress' %}
+                        <span class="badge badge-soft-warning rounded text-warning fw-medium fs-13">Checked In</span>
+                        {% elif appointment.status == 'pending' %}
+                        <span class="badge bg-warning text-dark rounded fw-medium fs-13">Pending</span>
+                        {% elif appointment.status == 'cancelled' %}
+                        <span class="badge badge-soft-danger rounded text-danger fw-medium fs-13">Cancelled</span>
+                        {% else %}
+                        <span class="badge badge-soft-secondary rounded text-secondary fw-medium fs-13">{{ appointment.status|title }}</span>
+                        {% endif %}
+                    </td>
+                     <td class="text-end">
+                                <a href="{% url 'dashboard:patient_appointment_detail' pk=appointment.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="ti ti-eye me-1"></i>View
+                                </a>
+                     </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-5">
+                        <div class="d-flex flex-column align-items-center">
+                            <i class="ti ti-calendar-off fs-48 text-muted mb-3"></i>
+                            <h6 class="text-muted">No appointments found</h6>
+                            <p class="text-muted">Book your first appointment to get started</p>
+                            <a href="javascript:void(0);" class="btn btn-primary btn-sm mt-2" data-bs-toggle="offcanvas" data-bs-target="#new_appointment">
+                                <i class="ti ti-plus me-1"></i>Book Appointment
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!--  End Table -->
+    
+</div>
+<!-- End Content -->
+
+<!-- New Appointment Offcanvas -->
+{% include 'dashboard/partials/_new_appointment_offcanvas.html' %}
+
+<!-- Start Delete Modal  -->
+<div class="modal fade" id="delete_modal">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-body text-center position-relative">
+                <img src="{% static 'dashboard/assets/img/bg/delete-modal-bg-01.png' %}" alt="" class="img-fluid position-absolute top-0 start-0 z-0">
+                <img src="{% static 'dashboard/assets/img/bg/delete-modal-bg-02.png' %}" alt="" class="img-fluid position-absolute bottom-0 end-0 z-0">
+                <div class="mb-3 position-relative z-1">
+                    <span class="avatar avatar-lg bg-danger text-white"><i class="ti ti-trash fs-24"></i></span>
+                </div>
+                <h5 class="fw-bold mb-1 position-relative z-1">Delete Confirmation</h5>
+                <p class="mb-3 position-relative z-1">Are you sure want to delete?</p>
+                <div class="d-flex justify-content-center">
+                    <a href="javascript:void(0);" class="btn btn-light position-relative z-1 me-3" data-bs-dismiss="modal">Cancel</a>
+                    <a href="" class="btn btn-danger position-relative z-1" data-bs-dismiss="modal">Yes, Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Delete Modal  -->
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'dashboard/assets/plugins/select2/js/select2.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/moment.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/plugins/daterangepicker/daterangepicker.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/bootstrap-datetimepicker.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/dataTables.bootstrap5.min.js' %}"></script>
+{% endblock %}

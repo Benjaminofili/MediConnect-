@@ -1,0 +1,244 @@
+{% extends 'dashboard/base_doctor.html' %}
+{% load static %}
+
+{% block title %}Appointments{% endblock %}
+
+{% block content %}
+<div class="content">
+
+    <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 pb-3 mb-3 border-1 border-bottom">
+        <div class="flex-grow-1">
+            <h4 class="fw-semibold mb-0">Appointments</h4>
+        </div>
+        <div class="text-end d-flex">
+            <div class="dropdown me-1">
+                <a href="javascript:void(0);" class="btn btn-md fs-14 fw-normal border bg-white rounded text-dark d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                    Export<i class="ti ti-chevron-down ms-2"></i>
+                </a>
+                <ul class="dropdown-menu p-2">
+                    <li>
+                        <a class="dropdown-item" href="#">Download as PDF</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#">Download as Excel</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="bg-white border shadow-sm rounded px-1 pb-0 text-center d-flex align-items-center justify-content-center">
+                <a href="{% url 'dashboard:doctor_appointments' %}" class="bg-light rounded p-1 d-flex align-items-center justify-content-center"> <i class="ti ti-list fs-14 text-body"></i></a>
+                <a href="{% url 'dashboard:doctor_appointment_calendar' %}" class="bg-white rounded p-1 d-flex align-items-center justify-content-center"> <i class="ti ti-calendar-event fs-14 text-body"></i> </a>
+            </div>
+
+            <a href="javascript:void(0);" class="btn btn-primary ms-2 fs-13 btn-md" data-bs-toggle="offcanvas" data-bs-target="#new_appointment"><i class="ti ti-plus me-1"></i> New Appointment </a>
+        </div>
+    </div>
+    <div class=" d-flex align-items-center justify-content-between flex-wrap row-gap-3 mb-3">
+        <div class="d-flex align-items-center gap-2">
+            <div class="search-set">
+                <div class="d-flex align-items-center flex-wrap gap-2">
+                    <div class="table-search d-flex align-items-center mb-0">
+                        <div class="search-input">
+                            <a href="javascript:void(0);" class="btn-searchset"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex right-content align-items-center flex-wrap">
+                <div class="input-icon-start position-relative">
+                    <span class="input-icon-addon text-dark">
+                        <i class="ti ti-calendar-event"></i>
+                    </span>
+                    <input type="text" class="form-control form-control-sm bookingrange">
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex table-dropdown mb-3 pb-1 right-content align-items-center flex-wrap row-gap-3">
+            <div class="dropdown me-2">
+                <a href="javascript:void(0);" class="bg-white border rounded btn btn-md text-dark fs-14 py-1 align-items-center d-flex fw-normal" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                    <i class="ti ti-filter text-gray-5 me-1"></i>Filters
+                </a>
+                <div class="dropdown-menu dropdown-lg dropdown-menu-end filter-dropdown p-0" id="filter-dropdown">
+                    <div class="d-flex align-items-center justify-content-between border-bottom filter-header">
+                        <h4 class="mb-0 fw-bold">Filter</h4>
+                        <div class="d-flex align-items-center">
+                            <a href="javascript:void(0);" class="link-danger text-decoration-underline">Clear All</a>
+                        </div>
+                    </div>
+                    <form action="#">
+                        <div class="filter-body pb-0">
+                            <div class="mb-3">
+                                <label class="form-label mb-1 text-dark fs-14 fw-medium">Date</label>
+                                <div class="input-icon-end position-relative">  
+                                    <input type="text" class="form-control datetimepicker" placeholder="dd/mm/yyyy">
+                                    <span class="input-icon-addon">
+                                        <i class="ti ti-calendar"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <label class="form-label">Status</label>
+                                    <a href="javascript:void(0);" class="link-primary mb-1">Reset</a>
+                                </div>
+                                <select class="select2" multiple="multiple">
+                                    <option value="m-1" selected="">Available</option>
+                                    <option value="m-2">Unavailable</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="filter-footer d-flex align-items-center justify-content-end border-top">
+                            <a href="javascript:void(0);" class="btn btn-light btn-md me-2 fw-medium" id="close-filter">Close</a>
+                            <button type="submit" class="btn btn-primary btn-md fw-medium">Filter</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="dropdown">
+                <a href="javascript:void(0);" class="dropdown-toggle btn bg-white btn-md d-inline-flex align-items-center fw-normal rounded border text-dark px-2 py-1 fs-14" data-bs-toggle="dropdown">
+                   <span class="me-1"> Sort By : </span>  Recent
+                </a>
+                <ul class="dropdown-menu  dropdown-menu-end p-2">
+                    <li>
+                        <a href="javascript:void(0);" class="dropdown-item rounded-1">Recently Added</a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="dropdown-item rounded-1">Ascending</a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="dropdown-item rounded-1">Desending</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table datatable table-nowrap">
+            <thead class="">
+                <tr>
+                    <th class="no-sort">
+                        Date & Time
+                    </th>
+                    <th>Patient</th>
+                    <th>Mode</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for apt in appointments %}
+            <tr>
+                <!-- Date & Time -->
+                <td>
+                    {{ apt.date|date:"d M Y" }} - {{ apt.start_time|time:"h:i A" }}
+                </td>
+
+                <!-- Patient -->
+                <td>
+                    <div class="d-flex align-items-center">
+                        <a href="{% url 'dashboard:doctor_patient_detail' pk=apt.patient.id %}" class="avatar avatar-md me-2">
+                            {% if apt.patient.profile_picture %}
+                                <img src="{{ apt.patient.profile_picture.url }}" alt="patient" class="rounded-circle">
+                            {% else %}
+                                <span class="avatar-title bg-primary rounded-circle">
+                                    {{ apt.patient.first_name|slice:":1" }}{{ apt.patient.last_name|slice:":1" }}
+                                </span>
+                            {% endif %}
+                        </a>
+                        <a href="{% url 'dashboard:doctor_patient_detail' pk=apt.patient.id %}" class="fw-semibold">
+                            {{ apt.patient.full_name }}
+                            <span class="text-body fs-13 fw-normal d-block">
+                                {{ apt.patient.phone|default:"No phone" }}
+                            </span>
+                        </a>
+                    </div>
+                </td>
+
+                <!-- Mode -->
+                <td>
+                    {% if apt.video_room_url %}
+                        Online
+                    {% else %}
+                        In-person
+                    {% endif %}
+                </td>
+
+                <!-- Status -->
+                <td>
+                    {% if apt.status == 'completed' %}
+                        <span class="badge badge-soft-primary rounded text-primary fw-medium fs-13">Checked Out</span>
+                    {% elif apt.status in 'in_progress confirmed' %}
+                        <span class="badge badge-soft-warning rounded text-warning fw-medium fs-13">Checked In</span>
+                    {% elif apt.status == 'pending' %}
+                        <span class="badge badge-soft-info rounded text-info fw-medium fs-13">Scheduled</span>
+                    {% elif apt.status == 'cancelled' %}
+                        <span class="badge badge-soft-danger rounded text-danger fw-medium fs-13">Cancelled</span>
+                    {% elif apt.status == 'no_show' %}
+                        <span class="badge badge-soft-secondary rounded text-secondary fw-medium fs-13">No Show</span>
+                    {% else %}
+                        <span class="badge badge-soft-secondary rounded text-secondary fw-medium fs-13">
+                            {{ apt.status|title }}
+                        </span>
+                    {% endif %}
+                </td>
+
+                <!-- Actions -->
+                <td class="action-item">
+                    <a href="javascript:void(0);" data-bs-toggle="dropdown">
+                        <i class="ti ti-dots-vertical"></i>
+                    </a>
+                    <ul class="dropdown-menu p-2">
+                        {% if apt.status == 'pending' %}
+                            <li>
+                                <a href="{% url 'dashboard:doctor_confirm_appointment' apt.id %}"
+                                class="dropdown-item d-flex align-items-center text-success">
+                                    <i class="ti ti-check me-2"></i> Confirm
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'dashboard:doctor_appointment_detail' pk=apt.id %}"
+                                class="dropdown-item d-flex align-items-center">
+                                    <i class="ti ti-eye me-2"></i> Review
+                                </a>
+                            </li>
+                        {% else %}
+                            <li>
+                                <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center"
+                                data-bs-toggle="offcanvas" data-bs-target="#edit_appointment">
+                                    <i class="ti ti-pencil me-2"></i> Edit
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'dashboard:doctor_appointment_detail' pk=apt.id %}"
+                                class="dropdown-item d-flex align-items-center">
+                                    <i class="ti ti-eye me-2"></i> View
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if apt.status != 'pending' %}
+                            <li>
+                                <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center text-danger"
+                                data-bs-toggle="modal" data-bs-target="#delete_modal">
+                                    <i class="ti ti-trash me-2"></i> Delete
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center text-muted py-4">
+                    No appointments found.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    </div>
+    </div>
+
+{% include 'dashboard/partials/_doctor_actions.html' %}
+
+{% endblock %}

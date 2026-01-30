@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Prescriptions Export</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #0d6efd;
+            padding-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #0d6efd;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .prescription-id {
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        @media print {
+            body { margin: 0; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Prescriptions Report</h1>
+    <p><strong>Doctor:</strong> Dr. {{ doctor.user.full_name }}</p>
+    <p><strong>Export Date:</strong> {{ export_date|date:"F d, Y H:i" }}</p>
+    <p><strong>Total Prescriptions:</strong> {{ prescriptions|length }}</p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Prescription ID</th>
+                <th>Patient Name</th>
+                <th>Patient Email</th>
+                <th>Date Created</th>
+                <th>Issued Date</th>
+                <th>Valid Until</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pres in prescriptions %}
+            <tr>
+                <td class="prescription-id">
+                    {% if pres.prescription_number %}
+                        {{ pres.prescription_number }}
+                    {% else %}
+                        RX-{{ pres.id|stringformat:"06d" }}
+                    {% endif %}
+                </td>
+                <td>{{ pres.consultation.appointment.patient.full_name }}</td>
+                <td>{{ pres.consultation.appointment.patient.email }}</td>
+                <td>{{ pres.created_at|date:"Y-m-d H:i" }}</td>
+                <td>{{ pres.issued_date|date:"Y-m-d"|default:"N/A" }}</td>
+                <td>{{ pres.valid_until|date:"Y-m-d"|default:"N/A" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 20px;">No prescriptions found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <script>
+        // Auto-print when loaded (optional)
+        // window.onload = function() { window.print(); }
+    </script>
+</body>
+</html>
+
+
+

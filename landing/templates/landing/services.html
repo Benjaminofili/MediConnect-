@@ -1,0 +1,75 @@
+{% extends 'landing/base.html' %}
+{% load static %}
+
+{% block title %}Mediax - Our Services{% endblock %}
+
+{% block content %}
+<div class="breadcumb-wrapper" data-bg-src="{% static 'landing/assets/img/bg/breadcumb-bg.jpg' %}">
+    <div class="container">
+        <div class="breadcumb-content">
+            <h1 class="breadcumb-title">Services</h1>
+            <ul class="breadcumb-menu">
+                <li><a href="{% url 'landing:home' %}">Home</a></li>
+                <li>Services</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<section class="overflow-hidden space" id="service-sec">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8">
+                <div class="title-area text-center">
+                    <span class="sub-title">
+                        <img src="{% static 'landing/assets/img/theme-img/title_icon.svg' %}" alt="Icon">Our Services
+                    </span>
+                    <h2 class="sec-title">Our Mediax specialties Technical service</h2>
+                </div>
+            </div>
+        </div>
+        <div class="row gy-4 justify-content-center">
+            {% for service in services %}
+            <div class="col-xl-3 col-lg-4 col-sm-6">
+                <div class="service-card" data-bg-src="{{ service.cover_image.url }}">
+                    <div class="box-shape">
+                        <img src="{% static 'landing/assets/img/bg/service_card_bg.png' %}" alt="Service" />
+                    </div>
+                    <div class="box-icon">
+                        <img src="{{ service.icon_image.url }}" alt="Icon" />
+                    </div>
+                    <h3 class="box-title">
+                        <a href="{% url 'landing:service_details_dynamic' service.id %}">{{ service.title }}</a>
+                    </h3>
+                    <p class="box-text">{{ service.description|truncatewords:10 }}</p>
+                    <a href="{% url 'landing:service_details_dynamic' service.id %}"
+                        class="th-btn btn-sm style2 theme-color">Read More</a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p>No services available at the moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- <div class="th-pagination text-center mt-5 mb-0">
+                <ul>
+                    <li><a href="#">1</a></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#"><i class="far fa-arrow-right"></i></a></li>
+                </ul>
+            </div> -->
+    </div>
+</section>
+
+<section class="space-bottom">
+    <div class="container z-index-common">
+        <div class="cta-sec5 mega-hover" data-bg-src="{% static 'landing/assets/img/bg/cta_bg_5.jpg' %}">
+            <h2 class="sec-title  mb-35">We are pleased to offer you the healthy.</h2>
+            <a href="{% url 'landing:contact' %}" class="th-btn style4 shadow-1">Contact Us Now</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

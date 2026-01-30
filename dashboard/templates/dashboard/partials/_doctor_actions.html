@@ -1,0 +1,174 @@
+{% load static %}
+
+<div class="offcanvas offcanvas-offset offcanvas-end" tabindex="-1" id="new_appointment">
+    <div class="offcanvas-header d-block pb-0 px-0">
+        <div class="border-bottom d-flex align-items-center justify-content-between pb-3 px-3">
+            <h5 class="offcanvas-title fs-18 fw-bold">New Appointment</h5>
+            <button type="button" class="btn-close opacity-100" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+    </div>
+    <form method="POST" action="{% url 'dashboard:doctor_create_appointment' %}">
+        {% csrf_token %}
+        <div class="offcanvas-body pt-3">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Patient <span class="text-danger">*</span></label>
+                        
+                        {# LOGIC: If a list of patients exists, show dropdown. If on Detail page (single patient), show readonly input #}
+                        {% if patients %}
+                            <select name="patient" class="form-control select2-patient" required>
+                                <option value="">Select Patient</option>
+                                {% for p in patients %}
+                                    <option value="{{ p.id }}">{{ p.full_name }} ({{ p.email }})</option>
+                                {% endfor %}
+                            </select>
+                        {% elif patient %}
+                            <input type="hidden" name="patient" value="{{ patient.id }}">
+                            <input type="text" class="form-control bg-light" value="{{ patient.full_name }}" readonly>
+                        {% else %}
+                            <div class="alert alert-warning py-1">No patient context found</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-lg-12">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Appointment Type <span class="text-danger">*</span></label>
+                        <select name="appointment_type" class="form-control" required>
+                            <option value="online">Online Consultation</option>
+                            <option value="in_person">In-person</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Date <span class="text-danger">*</span></label>
+                        <div class="input-icon-end position-relative">
+                            <input type="date" name="date" class="form-control" required>
+                            <span class="input-icon-addon">
+                                <i class="ti ti-calendar"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Time <span class="text-danger">*</span></label>
+                        <div class="input-icon-end position-relative">
+                            <input type="time" name="start_time" class="form-control" required>
+                            <span class="input-icon-addon">
+                                <i class="ti ti-clock"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-12">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Duration</label>
+                        <select name="duration" class="form-control">
+                            <option value="15">15 minutes</option>
+                            <option value="30" selected>30 minutes</option>
+                            <option value="45">45 minutes</option>
+                            <option value="60">1 hour</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-lg-12">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Reason for Appointment</label>
+                        <textarea name="reason" rows="3" class="form-control rounded" placeholder="Enter reason..."></textarea>
+                    </div>
+                </div>
+
+                <div class="col-lg-12">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Status <span class="text-danger">*</span></label>
+                        <select name="status" class="form-control" required>
+                            <option value="pending">Pending</option>
+                            <option value="confirmed" selected>Confirmed</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="offcanvas-footer mb-1 mt-3 p-3 border-1 border-top">
+            <div class="d-flex justify-content-end gap-2">
+                <a href="javascript:void(0);" class="btn btn-light btm-md" data-bs-dismiss="offcanvas">Cancel</a>
+                <button type="submit" class="btn btn-primary btm-md">Create Appointment</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="offcanvas offcanvas-offset offcanvas-end" tabindex="-1" id="edit_appointment">
+    <div class="offcanvas-header d-block pb-0 px-0">
+        <div class="border-bottom d-flex align-items-center justify-content-between pb-3 px-3">
+            <h5 class="offcanvas-title fs-18 fw-bold"> Edit Appointment</h5>
+            <button type="button" class="btn-close opacity-100" data-bs-dismiss="offcanvas" aria-label="Close"></button></div>
+    </div>
+    <div class="offcanvas-body pt-3">
+        <p>Edit form content here...</p>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-offset offcanvas-end" tabindex="-1" id="view_details">
+    <div class="offcanvas-header d-block pb-0 px-0">
+        <div class="border-bottom d-flex align-items-center justify-content-between pb-3 px-3">
+            <h5 class="offcanvas-title fs-18 fw-bold">Appointment Details <span class="badge badge-soft-primary border pt-1 px-2 border-primary fw-medium ms-2">#AP544658</span></h5>
+            <button type="button" class="btn-close opacity-100" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+    </div>
+    <div class="offcanvas-body pt-0 px-0">
+        <h6 class="bg-light py-2 px-3 text-dark fw-bold"> When & Where </h6>
+        <div class="px-3 my-4">
+            <p class="text-dark mb-3 fw-semibold d-flex align-items-center justify-content-between"> Appointment On <span class="text-body fw-normal"> Saturday, 25 Apr 2025  </span> </p>
+            <p class="text-dark mb-3 fw-semibold d-flex align-items-center justify-content-between"> Time <span class="text-body fw-normal"> 09:00 AM - 11:00 AM  </span> </p>
+            <p class="text-dark mb-3 fw-semibold d-flex align-items-center justify-content-between"> Location <span class="text-body fw-normal">Newyork , USA   </span> </p>
+            <p class="text-dark mb-3 fw-semibold d-flex align-items-center justify-content-between"> Appointment Type <span class="text-body fw-normal"> Online Consultation </span> </p>
+            <div class="text-dark mb-3 fw-semibold d-flex align-items-center justify-content-between"> Patient Details 
+                <div class="text-body fw-normal d-flex align-items-center"> 
+                    <span class="avatar avatar-sm">
+                        <img src="{% static 'dashboard/assets/img/users/avatar-2.jpg' %}" alt="" class="rounded-circle me-1">
+                    </span>
+                    James Adrian 
+                </div> 
+            </div>
+        </div>
+        <div class="px-3 my-4">
+            {% if appointment %}
+                <div>
+                    <a href="{% url 'dashboard:active_encounter' appointment.id %}" class="btn-primary btn btn-sm rounded d-flex align-items-center">
+                        <i class="ti ti-video me-1"></i> Start
+                    </a>
+                </div>
+            {% else %}
+                <div class="text-muted small">Open an appointment to start a call.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="delete_modal">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-body text-center position-relative">
+                <img src="{% static 'dashboard/assets/img/bg/delete-modal-bg-01.png' %}" alt="" class="img-fluid position-absolute top-0 start-0 z-0">
+                <img src="{% static 'dashboard/assets/img/bg/delete-modal-bg-02.png' %}" alt="" class="img-fluid position-absolute bottom-0 end-0 z-0">
+                <div class="mb-3 position-relative z-1">
+                    <span class="avatar avatar-lg bg-danger text-white"><i class="ti ti-trash fs-24"></i></span>
+                </div>
+                <h5 class="fw-bold mb-1 position-relative z-1">Delete Confirmation</h5>
+                <p class="mb-3 position-relative z-1">Are you sure want to delete?</p>
+                <div class="d-flex justify-content-center">
+                    <a href="javascript:void(0);" class="btn btn-light position-relative z-1 me-3" data-bs-dismiss="modal">Cancel</a>
+                    <a href="" id="confirm-delete-btn" class="btn btn-danger position-relative z-1">Yes, Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

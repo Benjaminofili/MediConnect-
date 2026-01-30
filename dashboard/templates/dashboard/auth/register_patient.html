@@ -1,0 +1,112 @@
+{% extends 'dashboard/auth/base_auth.html' %}
+{% load static %}
+
+{% block title %}Patient Registration{% endblock %}
+
+{% block auth_image %}
+<img src="{% static 'dashboard/assets/img/auth/reg-illustration-img.png' %}" alt="Patient Registration"
+    class="img-fluid img1">
+{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="card border-1 p-lg-3 shadow-sm rounded-3 mb-4">
+        <div class="card-body">
+            <div class="text-center mb-3">
+                <h5 class="mb-1 fs-20 fw-bold">Patient Registration</h5>
+                <p class="mb-0">Create your account</p>
+            </div>
+
+            {% if messages %}
+            <div class="mb-3">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">First Name <span class="text-danger">*</span></label>
+                    <input type="text" name="first_name" class="form-control" placeholder="John" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                    <input type="text" name="last_name" class="form-control" placeholder="Doe" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                    <input type="tel" name="phone" class="form-control" placeholder="+1 234 567 890" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Gender <span class="text-danger">*</span></label>
+                    <select name="gender" class="form-select" required>
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="col-12 mb-3">
+                    <label class="form-label">Date of Birth <span class="text-danger">*</span></label>
+                    <input type="date" name="date_of_birth" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                <input type="email" name="email" class="form-control" placeholder="john@example.com" required>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Password <span class="text-danger">*</span></label>
+                    <input type="password" name="password" class="form-control" placeholder="******" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                    <input type="password" name="password_confirm" class="form-control" placeholder="******" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn bg-primary text-white w-100 mt-2" id="submitBtn">
+                <span id="btnText">Register</span>
+                <span id="btnSpinner" class="d-none">
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Processing registration...
+                </span>
+            </button>
+
+            <div class="text-center mt-3">
+                <p class="mb-0">Already have an account? <a href="{% url 'dashboard:login' %}"
+                        class="text-primary">Login</a></p>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnSpinner = document.getElementById('btnSpinner');
+
+        form.addEventListener('submit', function (e) {
+            // Just disable the submit button to prevent double submission
+            submitBtn.disabled = true;
+
+            // Show loading spinner
+            btnText.classList.add('d-none');
+            btnSpinner.classList.remove('d-none');
+        });
+    });
+</script>
+{% endblock %}

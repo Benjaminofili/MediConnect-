@@ -1,0 +1,38 @@
+{% extends 'emails/base.html' %}
+
+{% block title %}Appointment Confirmed{% endblock %}
+
+{% block content %}
+<h2>Appointment Confirmed! ✅</h2>
+
+<p>Hello {{ patient_name }},</p>
+
+<p>Your appointment has been confirmed.</p>
+
+<div class="info-box">
+    <strong>Appointment Details:</strong><br>
+    <strong>Appointment Number:</strong> {{ appointment_number }}<br>
+    <strong>Doctor:</strong> {{ doctor_name }}<br>
+    <strong>Specialization:</strong> {{ specialization }}<br>
+    <strong>Date:</strong> {{ date }}<br>
+    <strong>Time:</strong> {{ time }}
+</div>
+
+<h3>Video Consultation</h3>
+<p>Join your consultation using the link below:</p>
+<a href="{{ video_room_url }}" class="button">Join Video Call</a>
+
+<div class="warning-box">
+    <strong>Important:</strong><br>
+    • Please join 5 minutes before your scheduled time<br>
+    • Ensure your camera and microphone are working<br>
+    • Have a stable internet connection
+</div>
+
+<p>To cancel or reschedule, please do so at least 2 hours before your appointment.</p>
+
+<p>Thank you for choosing MediConnect!</p>
+
+<p>Best regards,<br>
+The MediConnect Team</p>
+{% endblock %}

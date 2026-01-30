@@ -1,0 +1,359 @@
+{% extends 'dashboard/base_doctor.html' %}
+{% load static %}
+
+{% block title %}Doctor Dashboard{% endblock %}
+
+{% block content %}
+<div class="content pb-0">
+    <!-- Header -->
+    <div class="d-flex align-items-sm-center justify-content-between flex-wrap gap-2 mb-4">
+        <div>
+            <h4 class="fw-bold mb-1">Welcome, Dr. {{ user.last_name }}!</h4>
+            <p class="text-muted mb-0">Here's what's happening today</p>
+        </div>
+        <div class="d-flex align-items-center flex-wrap gap-2">
+            <span class="badge bg-light text-dark fs-14 fw-medium">
+                <i class="ti ti-calendar me-1"></i>{{ today|date:"l, F d, Y" }}
+            </span>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6 d-flex">
+            <div class="card flex-fill w-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="avatar bg-primary rounded-circle fs-20 d-inline-flex flex-shrink-0">
+                            <i class="ti ti-calendar-event"></i>
+                        </span>
+                        <div class="ms-2">
+                            <p class="mb-1 text-truncate">Today's Appointments</p>
+                            <h3 class="fw-bold mb-0">{{ todays_count }}</h3>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="badge fw-medium bg-info flex-shrink-0 me-2">This Week: {{ this_week_appointments }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 d-flex">
+            <div class="card flex-fill w-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="avatar bg-success rounded-circle fs-20 d-inline-flex flex-shrink-0">
+                            <i class="ti ti-users"></i>
+                        </span>
+                        <div class="ms-2">
+                            <p class="mb-1 text-truncate">Total Patients</p>
+                            <h3 class="fw-bold mb-0">{{ total_patients }}</h3>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="badge fw-medium bg-success flex-shrink-0 me-2">{{ completed_consultations }} Consultations</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 d-flex">
+            <div class="card flex-fill w-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="avatar bg-warning rounded-circle fs-20 d-inline-flex flex-shrink-0">
+                            <i class="ti ti-clock-hour-4"></i>
+                        </span>
+                        <div class="ms-2">
+                            <p class="mb-1 text-truncate">Pending</p>
+                            <h3 class="fw-bold mb-0">{{ pending_appointments }}</h3>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <a href="{% url 'dashboard:doctor_appointments' %}" class="text-primary fs-13">View pending requests</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 d-flex">
+            <div class="card flex-fill w-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="avatar bg-danger rounded-circle fs-20 d-inline-flex flex-shrink-0">
+                            <i class="ti ti-currency-dollar"></i>
+                        </span>
+                        <div class="ms-2">
+                            <p class="mb-1 text-truncate">This Month</p>
+                            <h3 class="fw-bold mb-0">${{ monthly_earnings|floatformat:0 }}</h3>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="text-muted fs-13">Total: ${{ total_earnings|floatformat:0 }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Today's Schedule -->
+        <div class="col-xl-8 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0">
+                        <i class="ti ti-calendar-time me-2 text-primary"></i>Today's Schedule
+                    </h5>
+                    <a href="{% url 'dashboard:doctor_appointments' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if todays_schedule %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Time</th>
+                                        <th>Reason</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for apt in todays_schedule %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar avatar-sm me-2">
+                                                    {% if apt.patient.profile_picture %}
+                                                        <img src="{{ apt.patient.profile_picture.url }}" alt="img" class="rounded-circle">
+                                                    {% else %}
+                                                        <span class="avatar-title bg-primary rounded-circle">
+                                                            {{ apt.patient.first_name|slice:":1" }}{{ apt.patient.last_name|slice:":1" }}
+                                                        </span>
+                                                    {% endif %}
+                                                </div>
+                                                <div>
+                                                    <h6 class="fs-14 mb-0 fw-semibold">{{ apt.patient.full_name }}</h6>
+                                                    <small class="text-muted">{{ apt.appointment_number }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="fw-medium">{{ apt.start_time|time:"h:i A" }}</span>
+                                            <br><small class="text-muted">{{ apt.end_time|time:"h:i A" }}</small>
+                                        </td>
+                                        <td>
+                                            <span class="text-truncate d-inline-block" style="max-width: 150px;">
+                                                {{ apt.reason|default:"General Consultation"|truncatechars:30 }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if apt.status == 'confirmed' %}
+                                                <span class="badge bg-success">Confirmed</span>
+                                            {% elif apt.status == 'pending' %}
+                                                <span class="badge bg-warning">Pending</span>
+                                            {% elif apt.status == 'in_progress' %}
+                                                <span class="badge bg-info">In Progress</span>
+                                            {% elif apt.status == 'completed' %}
+                                                <span class="badge bg-primary">Completed</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ apt.status|title }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if apt.can_join %}
+                                                <a href="{{ apt.video_room_url }}" target="_blank" 
+                                                   class="btn btn-sm btn-success">
+                                                    <i class="ti ti-video me-1"></i>Join
+                                                </a>
+                                            {% elif apt.status == 'confirmed' %}
+                                                <a href="{% url 'dashboard:doctor_appointment_detail' apt.id %}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="ti ti-eye me-1"></i>View
+                                                </a>
+                                            {% elif apt.status == 'completed' %}
+                                                <a href="{% url 'dashboard:doctor_appointment_detail' apt.id %}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="ti ti-eye me-1"></i>View
+                                                </a>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="ti ti-calendar-off fs-1 text-muted mb-3 d-block"></i>
+                            <h6 class="text-muted">No appointments scheduled for today</h6>
+                            <p class="text-muted fs-13">Enjoy your free time!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="col-xl-4 d-flex flex-column">
+            <!-- Upcoming Appointments -->
+            <div class="card shadow-sm flex-fill">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0">
+                        <i class="ti ti-calendar-plus me-2 text-info"></i>Upcoming
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if upcoming_appointments %}
+                        {% for apt in upcoming_appointments %}
+                        <div class="d-flex align-items-center justify-content-between mb-3 pb-3 {% if not forloop.last %}border-bottom{% endif %}">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar avatar-sm me-2 flex-shrink-0">
+                                    {% if apt.patient.profile_picture %}
+                                        <img src="{{ apt.patient.profile_picture.url }}" alt="img" class="rounded-circle">
+                                    {% else %}
+                                        <span class="avatar-title bg-info rounded-circle fs-12">
+                                            {{ apt.patient.first_name|slice:":1" }}{{ apt.patient.last_name|slice:":1" }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <h6 class="fs-14 mb-1 fw-semibold">{{ apt.patient.full_name }}</h6>
+                                    <small class="text-muted">
+                                        {{ apt.date|date:"M d" }} at {{ apt.start_time|time:"h:i A" }}
+                                    </small>
+                                </div>
+                            </div>
+                            <span class="badge bg-light text-dark">
+                                {{ apt.date|timesince:today }}
+                            </span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="ti ti-calendar-check fs-2 text-muted mb-2 d-block"></i>
+                            <p class="text-muted fs-13 mb-0">No upcoming appointments</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Recent Patients -->
+        <div class="col-xl-4 col-lg-6 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0">
+                        <i class="ti ti-users me-2 text-success"></i>Recent Patients
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_patients %}
+                        {% for apt in recent_patients %}
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar me-2 flex-shrink-0">
+                                    {% if apt.patient.profile_picture %}
+                                        <img src="{{ apt.patient.profile_picture.url }}" alt="img" class="rounded-circle">
+                                    {% else %}
+                                        <span class="avatar-title bg-success rounded-circle">
+                                            {{ apt.patient.first_name|slice:":1" }}{{ apt.patient.last_name|slice:":1" }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <h6 class="fs-14 mb-1 fw-semibold">{{ apt.patient.full_name }}</h6>
+                                    <p class="mb-0 fs-13 text-muted">{{ apt.date|date:"M d, Y" }}</p>
+                                </div>
+                            </div>
+                            <a href="{% url 'dashboard:doctor_patient_detail' pk=apt.patient.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="ti ti-file-text"></i>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="ti ti-users fs-2 text-muted mb-2 d-block"></i>
+                            <p class="text-muted fs-13 mb-0">No recent patients</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Reviews -->
+        <div class="col-xl-4 col-lg-6 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0">
+                        <i class="ti ti-clipboard-list me-2 text-warning"></i>Pending Reviews
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if pending_reviews %}
+                        {% for apt in pending_reviews %}
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar me-2 flex-shrink-0 bg-warning-light rounded-circle">
+                                    <i class="ti ti-file-alert text-warning fs-20"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fs-14 mb-1 fw-semibold">{{ apt.patient.full_name }}</h6>
+                                    <p class="mb-0 fs-13 text-muted">{{ apt.date|date:"M d, Y" }}</p>
+                                </div>
+                            </div>
+                            <a href="{% url 'dashboard:active_encounter' apt.id %}" class="btn btn-sm btn-warning">
+                                <i class="ti ti-pencil me-1"></i>Add Notes
+                            </a>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="ti ti-checkbox fs-2 text-success mb-2 d-block"></i>
+                            <p class="text-muted fs-13 mb-0">All reviews completed!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="col-xl-4 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0">
+                        <i class="ti ti-activity me-2 text-primary"></i>Recent Activity
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_activity %}
+                        <div class="recent-activity">
+                            {% for activity in recent_activity %}
+                            <div class="d-flex align-items-start mb-3">
+                                <span><i class="ti ti-point-filled fs-24 {{ activity.icon_class }}"></i></span>
+                                <div class="ms-1">
+                                    <p class="mb-1">
+                                        <span class="fw-semibold">{{ activity.type }}</span>
+                                        - {{ activity.description }}
+                                    </p>
+                                    <p class="fs-13 mb-0 text-muted">{{ activity.timestamp|timesince }} ago</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="ti ti-activity-heartbeat fs-2 text-muted mb-2 d-block"></i>
+                            <p class="text-muted fs-13 mb-0">No recent activity</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'emails/base.html' %}
+
+{% block title %}Appointment Cancelled{% endblock %}
+
+{% block content %}
+<h2>Appointment Cancelled ❌</h2>
+
+<p>Hello {{ recipient_name }},</p>
+
+<p>An appointment has been cancelled.</p>
+
+<div class="info-box">
+    <strong>Cancelled Appointment:</strong><br>
+    <strong>Appointment Number:</strong> {{ appointment_number }}<br>
+    <strong>Date:</strong> {{ date }}<br>
+    <strong>Time:</strong> {{ time }}<br>
+    <strong>Cancelled by:</strong> {{ other_party }}
+</div>
+
+{% if cancellation_reason %}
+<p><strong>Reason:</strong> {{ cancellation_reason }}</p>
+{% endif %}
+
+<p>If you need to book a new appointment, please visit our platform.</p>
+
+<a href="#" class="button">Book New Appointment</a>
+
+<p>Best regards,<br>
+The MediConnect Team</p>
+{% endblock %}

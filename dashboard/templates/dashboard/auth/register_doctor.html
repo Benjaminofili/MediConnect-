@@ -1,0 +1,105 @@
+{% extends 'dashboard/auth/base_auth.html' %}
+{% load static %}
+
+{% block title %}Doctor Registration{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="card border-1 p-lg-3 shadow-sm rounded-3 mb-4">
+        <div class="card-body">
+            <div class="text-center mb-3">
+                <h5 class="mb-1 fs-20 fw-bold">Doctor Registration</h5>
+                <p class="mb-0">Join our network of specialists</p>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">First Name</label>
+                    <input type="text" name="first_name" class="form-control" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" name="last_name" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email Address</label>
+                <input type="email" name="email" class="form-control" required>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-control" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" name="confirm_password" class="form-control" required>
+                </div>
+            </div>
+
+            <h6 class="fs-14 fw-bold text-muted mb-3 border-bottom pb-2">Professional Details</h6>
+
+            <div class="mb-3">
+                <label class="form-label">Medical License Number <span class="text-danger">*</span></label>
+                <input type="text" name="license_number" class="form-control" placeholder="LIC-123456" required>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Hospital Name</label>
+                    <input type="text" name="hospital_name" class="form-control">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Consultation Fee ($)</label>
+                    <input type="number" name="consultation_fee" class="form-control" placeholder="0.00" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Education / Degree</label>
+                <input type="text" name="education" class="form-control" placeholder="MBBS, MD..." required>
+            </div>
+
+            <button type="submit" class="btn bg-success text-white w-100 mt-2" id="submitBtn">
+                <span id="btnText">Register as Doctor</span>
+                <span id="btnSpinner" class="d-none">
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Processing registration...
+                </span>
+            </button>
+
+            <div class="text-center mt-3">
+                <p class="mb-0">Already have an account? <a href="{% url 'dashboard:login' %}"
+                        class="text-primary">Login</a></p>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnSpinner = document.getElementById('btnSpinner');
+
+        form.addEventListener('submit', function (e) {
+            // Disable the submit button to prevent multiple submissions
+            submitBtn.disabled = true;
+
+            // Show loading spinner and hide button text
+            btnText.classList.add('d-none');
+            btnSpinner.classList.remove('d-none');
+
+            // Disable all form inputs to prevent changes during submission
+            const formInputs = form.querySelectorAll('input, select, button');
+            formInputs.forEach(input => {
+                input.disabled = true;
+            });
+        });
+    });
+</script>
+{% endblock %}

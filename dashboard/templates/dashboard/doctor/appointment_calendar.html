@@ -1,0 +1,218 @@
+{% extends 'dashboard/base_doctor.html' %}
+{% load static %}
+
+{% block title %}Appointment Calendar{% endblock %}
+
+{% block extra_css %}
+<!-- FullCalendar CSS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+<style>
+    .fc-event {
+        cursor: pointer;
+    }
+    .fc-daygrid-event {
+        padding: 2px 4px;
+        border-radius: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content">
+
+    <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 pb-3 mb-3 border-1 border-bottom">
+        <div class="flex-grow-1">
+            <h4 class="fw-bold mb-0">Appointment Calendar</h4>
+        </div>
+
+        <div class="text-end d-flex">
+            <div class="bg-white border shadow-sm rounded px-1 pb-0 text-center d-flex align-items-center justify-content-center">
+                <a href="{% url 'dashboard:doctor_appointments' %}" class="bg-white rounded p-1 d-flex align-items-center justify-content-center" title="List View"> 
+                    <i class="ti ti-list fs-14 text-body"></i>
+                </a>
+                <a href="{% url 'dashboard:doctor_appointment_calendar' %}" class="bg-light rounded p-1 d-flex align-items-center justify-content-center" title="Calendar View"> 
+                    <i class="ti ti-calendar-event fs-14 text-body"></i> 
+                </a>
+            </div>
+
+            <a href="javascript:void(0);" class="btn btn-primary ms-2 fs-13 btn-md" data-bs-toggle="offcanvas" data-bs-target="#new_appointment">
+                <i class="ti ti-plus me-1"></i> New Appointment 
+            </a>
+        </div>
+    </div>
+
+    <!-- Calendar Legend -->
+    <div class="d-flex align-items-center gap-3 mb-3">
+        <span class="d-flex align-items-center">
+            <span class="badge bg-primary me-1">&nbsp;</span> Confirmed
+        </span>
+        <span class="d-flex align-items-center">
+            <span class="badge bg-warning me-1">&nbsp;</span> Pending
+        </span>
+        <span class="d-flex align-items-center">
+            <span class="badge bg-success me-1">&nbsp;</span> Completed
+        </span>
+        <span class="d-flex align-items-center">
+            <span class="badge bg-secondary me-1">&nbsp;</span> Other
+        </span>
+    </div>
+
+    <div class="card mb-0">
+        <div class="card-body">
+            <div id="calendar"></div>
+        </div>
+    </div>
+
+</div>
+
+<!-- New Appointment Offcanvas -->
+<div class="offcanvas offcanvas-offset offcanvas-end" tabindex="-1" id="new_appointment">
+    <div class="offcanvas-header d-block pb-0 px-0">
+        <div class="border-bottom d-flex align-items-center justify-content-between pb-3 px-3">
+            <h5 class="offcanvas-title fs-18 fw-bold">New Appointment</h5>
+            <button type="button" class="btn-close opacity-100" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+    </div>
+    <form method="POST" action="{% url 'dashboard:doctor_create_appointment' %}">
+        {% csrf_token %}
+        <div class="offcanvas-body pt-3">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Patient <span class="text-danger">*</span></label>
+                        <select name="patient" class="form-control" required>
+                            <option value="">Select Patient</option>
+                            {% for patient in patients %}
+                                <option value="{{ patient.id }}">{{ patient.full_name }} ({{ patient.email }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-lg-12">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Appointment Type <span class="text-danger">*</span></label>
+                        <select name="appointment_type" class="form-control" required>
+                            <option value="online">Online Consultation</option>
+                            <option value="in_person">In-person</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Date <span class="text-danger">*</span></label>
+                        <input type="date" name="date" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Time <span class="text-danger">*</span></label>
+                        <input type="time" name="start_time" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="col-lg-12">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Duration</label>
+                        <select name="duration" class="form-control">
+                            <option value="15">15 minutes</option>
+                            <option value="30" selected>30 minutes</option>
+                            <option value="45">45 minutes</option>
+                            <option value="60">1 hour</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-lg-12">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Reason for Appointment</label>
+                        <textarea name="reason" rows="3" class="form-control rounded" placeholder="Enter reason..."></textarea>
+                    </div>
+                </div>
+
+                <div class="col-lg-12">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Status <span class="text-danger">*</span></label>
+                        <select name="status" class="form-control" required>
+                            <option value="pending">Pending</option>
+                            <option value="confirmed" selected>Confirmed</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="offcanvas-footer mb-1 mt-3 p-3 border-1 border-top">
+            <div class="d-flex justify-content-end gap-2">
+                <a href="javascript:void(0);" class="btn btn-light btm-md" data-bs-dismiss="offcanvas">Cancel</a>
+                <button type="submit" class="btn btn-primary btm-md">Create Appointment</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<!-- FullCalendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize FullCalendar
+        var calendarEl = document.getElementById('calendar');
+        
+        if (calendarEl) {
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+                },
+                
+                // Load events from backend
+                events: "{% url 'dashboard:doctor_appointment_events' %}",
+                
+                // Click event to go to detail page
+                eventClick: function(info) {
+                    if (info.event.url) {
+                        info.jsEvent.preventDefault();
+                        window.location.href = info.event.url;
+                    }
+                },
+                
+                // Calendar settings
+                height: 'auto',
+                navLinks: true,
+                editable: false,
+                dayMaxEvents: 3,
+                eventDisplay: 'block',
+                
+                // Loading indicator
+                loading: function(isLoading) {
+                    if (isLoading) {
+                        calendarEl.style.opacity = '0.5';
+                    } else {
+                        calendarEl.style.opacity = '1';
+                    }
+                },
+                
+                // Error handling
+                eventSourceFailure: function(error) {
+                    console.error('Error loading events:', error);
+                    alert('Failed to load appointments. Please refresh the page.');
+                }
+            });
+            
+            calendar.render();
+            
+            // Debug: log when calendar is ready
+            console.log('Calendar initialized successfully');
+        } else {
+            console.error('Calendar element not found!');
+        }
+    });
+</script>
+{% endblock %}

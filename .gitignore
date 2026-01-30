@@ -1,0 +1,29 @@
+venv/
+__pycache__/
+*.py[cod]
+.env
+db.sqlite3
+media/
+staticfiles/
+.DS_Store
+*.log
+
+# Sensitive files
+Secrets.txt
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+cookies.txt
+docs/source/
+docs/make.bat
+docs/Makefile
+docs/puppeteer-config.json
+
+docs/build/
+docs/pdf/
+
+
+Map-ProjectStructure.ps1

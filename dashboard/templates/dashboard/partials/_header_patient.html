@@ -1,0 +1,147 @@
+{% load static %}
+
+<header class="navbar-header">
+    <div class="page-container topbar-menu">
+        <div class="d-flex align-items-center gap-2">
+
+            <!-- Logo -->
+            <a href="{% url 'dashboard:patient_dashboard' %}" class="logo">
+                <span class="logo-light">
+                    <span class="logo-lg"><img src="{% static 'dashboard/assets/img/logo.svg' %}" alt="logo"></span>
+                    <span class="logo-sm"><img src="{% static 'dashboard/assets/img/logo-small.svg' %}" alt="small logo"></span>
+                </span>
+                <span class="logo-dark">
+                    <span class="logo-lg"><img src="{% static 'dashboard/assets/img/logo-white.svg' %}" alt="dark logo"></span>
+                </span>
+            </a>
+
+            <a id="mobile_btn" class="mobile-btn" href="#sidebar">
+                <i class="ti ti-menu-deep fs-24"></i>
+            </a>
+               
+            <button class="sidenav-toggle-btn btn border-0 p-0 active" id="toggle_btn2"> 
+                <i class="ti ti-arrow-right"></i>
+            </button>  
+            
+
+        </div>
+
+        <div class="d-flex align-items-center">
+        
+
+            
+            <a href="javascript:void(0);" class="btn btn-liner-gradient me-3 d-lg-flex d-none">
+                AI Assistance <i class="ti ti-chart-bubble-filled ms-1"></i>
+            </a>
+
+            <div class="header-item">
+                <a href="{% url 'dashboard:patient_appointment_calendar' %}" class="btn topbar-link" title="My Appointments">
+                    <i class="ti ti-calendar-due fs-18"></i>
+                </a>
+            </div>
+
+            <div class="header-item">
+                <a href="{% url 'dashboard:patient_profile' %}" class="btn topbar-link" title="Profile Settings">
+                    <i class="ti ti-settings-2 fs-18"></i>
+                </a>
+            </div>
+
+
+            
+            <div class="header-item">
+                <div class="dropdown me-3">
+                    <button class="topbar-link btn btn-icon dropdown-toggle drop-arrow-none position-relative"
+                            data-bs-toggle="dropdown" data-bs-offset="0,24">
+                        <i class="ti ti-bell-check fs-18 animate-ring"></i>
+                        <span class="notification-badge bg-danger text-white">3</span>
+                    </button>
+
+                    <div class="dropdown-menu dropdown-menu-end p-0 shadow-lg" style="width: 360px;">
+                        <div class="p-3 border-bottom">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="m-0 fw-bold">Notifications</h6>
+                                <small class="text-primary cursor-pointer">Mark all as read</small>
+                            </div>
+                        </div>
+                        <div class="notification-body" data-simplebar style="max-height: 400px;">
+                            <a href="#" class="dropdown-item p-3 border-bottom hover-bg-light">
+                                <div class="d-flex">
+                                    <div class="me-3">
+                                        <div class="avatar avatar-md rounded-circle bg-soft-primary text-primary d-flex align-items-center justify-content-center">
+                                            <i class="ti ti-bell"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p class="mb-1 fw-medium">Dr. Mick Thompson</p>
+                                        <p class="small text-muted mb-1">Your appointment is confirmed for tomorrow</p>
+                                        <small class="text-muted">2 hours ago</small>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="p-3 border-top text-center">
+                            <a href="{% url 'dashboard:patient_notifications' %}" class="small text-decoration-underline">
+                                View all notifications
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROFILE DROPDOWN WITH GENDER-BASED DEFAULT AVATAR -->
+            <div class="dropdown profile-dropdown">
+                <a href="javascript:void(0);" class="dropdown-toggle drop-arrow-none d-flex align-items-center" 
+                   data-bs-toggle="dropdown" data-bs-offset="0,22">
+                   
+                    {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" width="38" class="rounded-circle me-2" alt="{{ user.full_name }}">
+                    {% else %}
+                        {% if user.gender == 'female' %}
+                            <img src="{% static 'dashboard/assets/img/users/user-02.jpg' %}" width="38" class="rounded-circle me-2" alt="{{ user.full_name }}">
+                        {% else %}
+                            <img src="{% static 'dashboard/assets/img/users/user-01.jpg' %}" width="38" class="rounded-circle me-2" alt="{{ user.full_name }}">
+                        {% endif %}
+                    {% endif %}
+
+                    <div class="d-none d-md-block text-start">
+                        <p class="mb-0 fw-medium text-dark">{{ user.full_name }}</p>
+                        <small class="text-muted">Patient</small>
+                    </div>
+                    <span class="online-status ms-2">
+                        <i class="ti ti-circle-filled text-success"></i>
+                    </span>
+                </a>
+
+                <div class="dropdown-menu dropdown-menu-end p-3 shadow" style="width: 280px;">
+                    <div class="text-center mb-3">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" class="rounded-circle mb-3" width="90" alt="">
+                        {% else %}
+                            {% if user.gender == 'female' %}
+                                <img src="{% static 'dashboard/assets/img/users/user-02.jpg' %}" class="rounded-circle mb-3" width="90" alt="">
+                            {% else %}
+                                <img src="{% static 'dashboard/assets/img/users/user-01.jpg' %}" class="rounded-circle mb-3" width="90" alt="">
+                            {% endif %}
+                        {% endif %}
+                        <h6 class="mb-1">{{ user.full_name }}</h6>
+                        <p class="text-muted small mb-0">{{ user.email }}</p>
+                    </div>
+
+                    <div class="border-top pt-3">
+                        <a href="{% url 'dashboard:patient_profile' %}" class="dropdown-item rounded mb-2">
+                            <i class="ti ti-user-circle me-2"></i> My Profile
+                        </a>
+                        <a href="{% url 'dashboard:patient_appointments' %}" class="dropdown-item rounded mb-2">
+                            <i class="ti ti-calendar-event me-2"></i> My Appointments
+                        </a>
+                        <div class="border-top pt-3 mt-3">
+                            <a href="{% url 'dashboard:logout' %}" class="dropdown-item text-danger rounded">
+                                <i class="ti ti-logout me-2"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

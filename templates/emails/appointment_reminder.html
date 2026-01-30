@@ -1,0 +1,32 @@
+{% extends 'emails/base.html' %}
+
+{% block title %}Appointment Reminder{% endblock %}
+
+{% block content %}
+<h2>Appointment Reminder ⏰</h2>
+
+<p>Hello {{ patient_name }},</p>
+
+<p>This is a reminder for your upcoming appointment <strong>tomorrow</strong>.</p>
+
+<div class="info-box">
+    <strong>Appointment Details:</strong><br>
+    <strong>Appointment Number:</strong> {{ appointment_number }}<br>
+    <strong>Doctor:</strong> {{ doctor_name }}<br>
+    <strong>Date:</strong> {{ date }}<br>
+    <strong>Time:</strong> {{ time }}
+</div>
+
+<h3>Join Your Consultation</h3>
+<a href="{{ video_room_url }}" class="button">Join Video Call</a>
+
+<div class="warning-box">
+    <strong>Reminder:</strong><br>
+    • Join 5 minutes before your scheduled time<br>
+    • Test your camera and microphone beforehand<br>
+    • Have a stable internet connection
+</div>
+
+<p>Best regards,<br>
+The MediConnect Team</p>
+{% endblock %}

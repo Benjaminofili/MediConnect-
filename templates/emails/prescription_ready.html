@@ -1,0 +1,33 @@
+{% extends 'emails/base.html' %}
+
+{% block title %}Prescription Ready{% endblock %}
+
+{% block content %}
+<h2>Prescription Ready 💊</h2>
+
+<p>Hello {{ patient_name }},</p>
+
+<p>Your prescription is ready!</p>
+
+<div class="info-box">
+    <strong>Prescription Details:</strong><br>
+    <strong>Prescription Number:</strong> {{ prescription_number }}<br>
+    <strong>Doctor:</strong> {{ doctor_name }}<br>
+    <strong>Diagnosis:</strong> {{ diagnosis|default:"See prescription details" }}<br>
+    <strong>Valid Until:</strong> {{ valid_until }}
+</div>
+
+<h3>Prescribed Medicines:</h3>
+<ul>
+{% for medicine in medicines %}
+    <li>{{ medicine }}</li>
+{% endfor %}
+</ul>
+
+<p>Please log in to view and download your full prescription.</p>
+
+<a href="#" class="button">View Prescription</a>
+
+<p>Best regards,<br>
+The MediConnect Team</p>
+{% endblock %}

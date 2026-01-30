@@ -1,0 +1,7 @@
+<div class="popup-search-box d-none d-lg-block">
+    <button class="searchClose"><i class="fal fa-times"></i></button>
+    <form action="{% url 'landing:home' %}" method="get">
+        <input type="text" name="q" placeholder="What are you looking for?" />
+        <button type="submit"><i class="fal fa-search"></i></button>
+    </form>
+</div>

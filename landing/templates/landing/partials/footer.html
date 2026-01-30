@@ -1,0 +1,100 @@
+{% load static %}
+<footer class="footer-wrapper footer-layout1" data-bg-src="{% static 'landing/assets/img/bg/footer_bg_1.jpg' %}">
+    <div class="container z-index-common">
+        <div class="newsletter-wrap">
+            <div class="newsletter-content">
+                <h2 class="sec-title">Subscribe for newsletter</h2>
+            </div>
+            <form class="newsletter-form" method="post" action="">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input class="form-control" type="email" name="email" placeholder="Email Address" required="" />
+                </div>
+                <button type="submit" class="th-btn shadow-1">Subscribe</button>
+            </form>
+        </div>
+    </div>
+    <div class="widget-area">
+        <div class="container">
+            <div class="row justify-content-between">
+                <div class="col-md-6 col-xl-auto">
+                    <div class="widget footer-widget">
+                        <div class="th-widget-about">
+                            <div class="about-logo">
+                                <a href="{% url 'landing:home' %}"><img src="{% static 'landing/assets/img/logo-footer.svg' %}" alt="Mediax" /></a>
+                            </div>
+                            <p class="about-text">
+                                Subscribe to out newsletter today to receive latest news administrate cost effective for tactical data.
+                            </p>
+                            <p class="footer-info">
+                                <i class="fal fa-location-dot"></i> 2478 Street City Ohio 90255
+                            </p>
+                            <p class="footer-info">
+                                <i class="fal fa-envelope"></i>
+                                <a href="mailto:info@mediax.com" class="info-box_link">info@mediax.com</a>
+                            </p>
+                            <p class="footer-info">
+                                <i class="fal fa-phone"></i>
+                                <a href="tel:+40276328246" class="info-box_link">+(402) 763 282 46</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-auto">
+                    <div class="widget widget_nav_menu footer-widget">
+                        <h3 class="widget_title">Quick Links</h3>
+                        <div class="menu-all-pages-container">
+                            <ul class="menu">
+                                <li><a href="{% url 'landing:about' %}">About Us</a></li>
+                                <li><a href="{% url 'landing:about' %}">Terms of Use</a></li>
+                                <li><a href="{% url 'landing:services' %}">Our Services</a></li>
+                                <li><a href="{% url 'landing:faq' %}">Help & FAQs</a></li>
+                                <li><a href="{% url 'landing:about' %}">Privacy policy</a></li>
+                                <li><a href="{% url 'landing:contact' %}">Contact Us</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-auto">
+                    <div class="widget widget_nav_menu footer-widget">
+                        <h3 class="widget_title">Popular service</h3>
+                        <div class="menu-all-pages-container">
+                            <ul class="menu">
+                                <li><a href="{% url 'landing:service_details' %}">Cardiology Care</a></li>
+                                <li><a href="{% url 'landing:service_details' %}">Urgent Care</a></li>
+                                <li><a href="{% url 'landing:service_details' %}">Orthopedic Care</a></li>
+                                <li><a href="{% url 'landing:service_details' %}">Diagnosis department</a></li>
+                                <li><a href="{% url 'landing:service_details' %}">Gastroenterology</a></li>
+                                <li><a href="{% url 'landing:service_details' %}">Therapy department</a></li>
+                                <li><a href="{% url 'landing:service_details' %}">Dental service</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-auto">
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="copyright-wrap">
+        <div class="container">
+            <div class="row gy-2 align-items-center">
+                <div class="col-md-7">
+                    <p class="copyright-text">
+                        Copyright <i class="fal fa-copyright"></i> {% now "Y" %}
+                        <a href="{% url 'landing:home' %}">Mediax</a>. All Rights Reserved.
+                    </p>
+                </div>
+                <div class="col-md-5 text-center text-md-end">
+                    <div class="th-social">
+                        <a href="https://www.facebook.com/"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.twitter.com/"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.linkedin.com/"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="https://www.whatsapp.com/"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>

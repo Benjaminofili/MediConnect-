@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{% block title %}MediConnect{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="shortcut icon" href="{% static 'dashboard/assets/img/favicon.png' %}">
+    
+    <link rel="stylesheet" href="{% static 'dashboard/assets/css/bootstrap.min.css' %}">
+    
+    <link rel="stylesheet" href="{% static 'dashboard/assets/plugins/tabler-icons/tabler-icons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/assets/plugins/fontawesome/css/fontawesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/assets/plugins/fontawesome/css/all.min.css' %}">
+    
+    <link rel="stylesheet" href="{% static 'dashboard/assets/css/style.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <div class="main-wrapper auth-bg position-relative overflow-hidden">
+        <div class="container-fluid position-relative z-1">
+            <div class="w-100 overflow-hidden position-relative flex-wrap d-block vh-100 bg-white">
+                <div class="row">
+                    <div class="col-lg-6 p-0">
+                        <div class="login-backgrounds d-lg-flex align-items-center justify-content-center d-none flex-wrap p-4 position-relative h-100 z-0">
+                            {% block auth_image %}
+                            <img src="{% static 'dashboard/assets/img/auth/cover-imgs-1.png' %}" alt="Illustration" class="img-fluid img1">
+                            {% endblock %}
+                        </div>
+                    </div> 
+                    
+                    <div class="col-lg-6 col-md-12 col-sm-12 position-relative">
+                        <div class="row justify-content-center align-items-center overflow-auto flex-wrap vh-100 py-3">
+                            <div class="col-md-8 mx-auto">
+                                {% block content %}
+                                {% endblock %}
+                                
+                                <p class="text-dark text-center mt-4">Copyright &copy; 2025 - MediConnect.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'dashboard/assets/js/jquery-3.7.1.min.js' %}"></script>
+    <script src="{% static 'dashboard/assets/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'dashboard/assets/js/script.js' %}"></script>
+</body>
+</html>

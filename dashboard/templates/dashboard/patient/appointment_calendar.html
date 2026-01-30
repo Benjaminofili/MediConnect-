@@ -1,0 +1,92 @@
+{% extends 'dashboard/base_patient.html' %}
+{% load static %}
+
+{% block content %}
+<div class="content">
+    <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 pb-3 mb-3 border-1 border-bottom">
+        <div class="flex-grow-1">
+            <h4 class="fw-bold mb-0">Appointment Calendar</h4>
+        </div>
+        <div class="text-end d-flex">
+            <div class="dropdown me-1">
+                <a href="javascript:void(0);" class="btn btn-md fw-normal fs-14 border bg-white rounded text-dark d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                    Export<i class="ti ti-chevron-down ms-2"></i>
+                </a>
+                <ul class="dropdown-menu p-2">
+                    <li><a class="dropdown-item" href="#">Download as PDF</a></li>
+                    <li><a class="dropdown-item" href="#">Download as Excel</a></li>
+                </ul>
+            </div>
+            
+            <div class="bg-white border shadow-sm rounded px-1 pb-0 text-center d-flex align-items-center justify-content-center">
+                <a href="{% url 'dashboard:patient_appointments' %}" class="bg-white rounded p-1 d-flex align-items-center justify-content-center" title="List View"> 
+                    <i class="ti ti-list fs-14 text-body"></i>
+                </a>
+                <a href="{% url 'dashboard:patient_appointment_calendar' %}" class="bg-light rounded p-1 d-flex align-items-center justify-content-center" title="Calendar View"> 
+                    <i class="ti ti-calendar-event fs-14 text-body"></i> 
+                </a>
+            </div>
+
+            <a href="javascript:void(0);" class="btn btn-primary ms-2 fs-13 btn-md" data-bs-toggle="offcanvas" data-bs-target="#new_appointment">
+                <i class="ti ti-plus me-1"></i> New Appointment 
+            </a>
+        </div>
+    </div>
+
+    <div class="card mb-0">
+        <div class="card-body">
+            <div id="calendar"></div>
+        </div>
+    </div>
+</div>
+
+<!-- New Appointment Offcanvas - REUSING THE ONE FROM appointments.html -->
+{% include 'dashboard/partials/_new_appointment_offcanvas.html' %}
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Improve calendar text contrast */
+    .fc-event-title,
+    .fc-event-time {
+        color: #ffffff !important;
+        font-weight: 600 !important;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5) !important;
+    }
+    .fc-daygrid-event {
+        color: #ffffff !important;
+    }
+    .fc-event {
+        border-color: rgba(255, 255, 255, 0.3) !important;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: '{% url "dashboard:patient_appointment_events" %}',
+            eventClick: function(info) {
+                window.location.href = info.event.url;
+                info.jsEvent.preventDefault();
+            },
+            height: 'auto',
+            editable: false,
+            selectable: false,
+            eventColor: '#0d6efd',
+            eventTextColor: '#ffffff',
+        });
+        calendar.render();
+    });
+</script>
+{% endblock %}

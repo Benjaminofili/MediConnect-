@@ -1,0 +1,40 @@
+{% load static %}
+<div class="th-menu-wrapper">
+    <div class="th-menu-area text-center">
+        <button class="th-menu-toggle"><i class="fal fa-times"></i></button>
+        <div class="mobile-logo">
+            <a href="{% url 'landing:home' %}"><img src="{% static 'landing/assets/img/logo.svg' %}" alt="Mediax" /></a>
+        </div>
+        <div class="th-mobile-menu">
+            <ul>
+                <li class="menu-item-has-children">
+                    <a href="{% url 'landing:home' %}">Home</a>
+
+                </li>
+                <li><a href="{% url 'landing:about' %}">About Us</a></li>
+                <li class="menu-item-has-children">
+                    <a href="{% url 'landing:services' %}">Service</a>
+
+                </li>
+                <li class="menu-item-has-children">
+                    <a href="#">Resources</a>
+                    <ul class="sub-menu">
+                        <li><a href="{% url 'landing:team' %}">Doctors</a></li>
+                        <li><a href="{% url 'landing:appointment' %}">Appointments</a></li>
+                    </ul>
+                </li>
+
+                <li><a href="{% url 'landing:contact' %}">Contact</a></li>
+                {% if user.is_authenticated %}
+                {% if user.user_type == 'doctor' %}
+                <li><a href="{% url 'dashboard:doctor_dashboard' %}">Dashboard</a></li>
+                {% elif user.user_type == 'patient' %}
+                <li><a href="{% url 'dashboard:patient_dashboard' %}">Dashboard</a></li>
+                {% endif %}
+                {% else %}
+                <li><a href="{% url 'dashboard:register_choice' %}">Get Started</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>

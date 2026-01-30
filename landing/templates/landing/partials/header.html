@@ -1,0 +1,124 @@
+{% load static %}
+<header class="th-header header-layout1">
+    <div class="header-top">
+        <div class="container">
+            <div class="row justify-content-center justify-content-lg-between align-items-center gy-2">
+                <div class="col-auto d-none d-lg-block">
+                    <div class="header-links">
+                        <ul>
+                            <li class="d-none d-sm-inline-block">
+                                <i class="fas fa-phone icon-btn"></i><b>Phone:</b>
+                                <a href="tel:+1636543569">+163-654-3569</a>
+                            </li>
+                            <li class="d-none d-sm-inline-block">
+                                <i class="fas fa-envelope icon-btn"></i><b>Email:</b>
+                                <a href="mailto:info@mediax.com">info@mediax.com</a>
+                            </li>
+                            <li class="d-none d-xxl-inline-block">
+                                <i class="fas fa-location-dot icon-btn"></i> 1 Barnes Jewish Hospital Plaza, United
+                                States
+                            </li>
+                            {% if not user.is_authenticated %}
+                            <li class="d-none d-lg-inline-block">
+                                <i class="fas fa-user icon-btn"></i>
+                                <a href="{% url 'dashboard:login' %}">Login</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="header-links">
+                        <ul>
+                            <li class="d-none d-md-inline-block">
+                                <div class="dropdown-link">
+                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink1"
+                                        data-bs-toggle="dropdown" aria-expanded="true">
+                                        <img src="{% static 'landing/assets/img/icon/english.png' %}" alt="icon" />
+                                        English
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
+                                        <li>
+                                            <a href="#">German</a>
+                                            <a href="#">French</a>
+                                            <a href="#">Italian</a>
+                                            <a href="#">Latvian</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="social-links">
+                                    <span class="social-title">Follow Us On: </span>
+                                    <a href="https://www.facebook.com/"><i class="fab fa-facebook-f"></i></a>
+                                    <a href="https://www.twitter.com/"><i class="fab fa-twitter"></i></a>
+                                    <a href="https://www.linkedin.com/"><i class="fab fa-linkedin-in"></i></a>
+                                    <a href="https://www.instagram.com/"><i class="fab fa-instagram"></i></a>
+                                    <a href="https://www.youtube.com/"><i class="fab fa-youtube"></i></a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="sticky-wrapper">
+        <div class="menu-area">
+            <div class="container">
+                <div class="row align-items-center justify-content-between">
+                    <div class="col-auto">
+                        <div class="header-logo">
+                            <div class="logo-bg" data-bg-src="{% static 'landing/assets/img/bg/logo_bg_1.png' %}"></div>
+                            <a href="{% url 'landing:home' %}"><img src="{% static 'landing/assets/img/logo.svg' %}"
+                                    alt="Mediax" /></a>
+                        </div>
+                    </div>
+                    <div class="col-auto d-none d-lg-inline-block">
+                        <nav class="main-menu d-none d-lg-inline-block">
+                            <ul>
+                                <li><a href="{% url 'landing:home' %}">Home</a></li>
+                                <li><a href="{% url 'landing:about' %}">About Us</a></li>
+                                <li><a href="{% url 'landing:services' %}">Services</a></li>
+
+                                <li class="menu-item-has-children">
+                                    <a href="#">Resources</a>
+                                    <ul class="sub-menu">
+                                        <li><a href="{% url 'landing:team' %}">Doctors</a></li>
+                                        <li><a href="{% url 'landing:appointment' %}">Appointments</a></li>
+                                    </ul>
+                                </li>
+                                <li><a href="{% url 'landing:contact' %}">Contact</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <div class="col-auto">
+                        <div class="header-button">
+                            <button type="button" class="icon-btn searchBoxToggler d-none d-xl-inline-block">
+                                <i class="far fa-search"></i>
+                            </button>
+
+                            {% if user.is_authenticated %}
+                            {% if user.user_type == 'doctor' %}
+                            <a href="{% url 'dashboard:doctor_dashboard' %}" class="th-btn">Dashboard</a>
+                            {% elif user.user_type == 'patient' %}
+                            <a href="{% url 'dashboard:patient_dashboard' %}" class="th-btn">Dashboard</a>
+                            {% endif %}
+                            {% else %}
+                            <a href="{% url 'dashboard:register_choice' %}" class="th-btn">Get Started</a>
+                            {% endif %}
+
+                            <a href="{% url 'landing:appointment' %}" class="th-btn ms-2">Appointment Now</a>
+                            <button type="button" class="icon-btn sideMenuInfo d-none d-xl-inline-block">
+                                <i class="far fa-bars"></i>
+                            </button>
+                            <button type="button" class="th-menu-toggle d-block d-lg-none">
+                                <i class="far fa-bars"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

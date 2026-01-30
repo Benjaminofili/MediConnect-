@@ -1,0 +1,242 @@
+{% extends 'dashboard/base_patient.html' %}
+{% include 'dashboard/partials/_new_appointment_offcanvas.html' %}
+
+{% load static %}
+
+{% block title %}Doctors{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'dashboard/assets/plugins/select2/css/select2.min.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard/assets/css/dataTables.bootstrap5.min.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content">
+
+    <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 pb-3 mb-3 border-1 border-bottom">
+        <div class="flex-grow-1">
+            <h4 class="fw-bold mb-0"> Doctors </h4>
+        </div>
+        <div class="text-end">
+            <div class="dropdown me-1">
+                <a href="javascript:void(0);" class="btn btn-md fw-normal border fs-14 bg-white rounded text-dark d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                    Export<i class="ti ti-chevron-down ms-2"></i>
+                </a>
+                <ul class="dropdown-menu p-2">
+                    <li>
+                        <a class="dropdown-item" href="#">Download as PDF</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#">Download as Excel</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-3 mb-3">
+        <div class="search-set">
+            <div class="table-search d-flex align-items-center mb-0">
+                <div class="search-input">
+                    <!-- <input type="text" class="form-control" placeholder="Search doctors..." id="doctor-search">
+                    <a href="javascript:void(0);" class="btn-searchset"></a> -->
+                </div>
+            </div>
+        </div>
+        <!-- <div class="dropdown">
+            <a href="javascript:void(0);" class="bg-white border rounded btn btn-md text-dark fs-14 py-1 align-items-center d-flex fw-normal" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                <i class="ti ti-filter text-gray-5 me-1"></i>Filter
+            </a>
+            <div class="dropdown-menu dropdown-lg dropdown-menu-end filter-dropdown p-0" id="filter-dropdown">
+                <div class="d-flex align-items-center justify-content-between border-bottom filter-header">
+                    <h4 class="mb-0 fw-bold">Filter</h4>
+                    <div class="d-flex align-items-center">
+                        <a href="javascript:void(0);" class="link-danger text-decoration-underline">Clear All</a>
+                    </div>
+                </div>
+                <form action="#" method="get">
+                    <div class="filter-body pb-0">
+                        <div class="mb-3">
+                            <label class="form-label">Specialization</label>
+                            <select name="specialization" class="form-select">
+                                <option value="">All Specializations</option>
+                                {% for spec in specializations %}
+                                <option value="{{ spec.id }}">{{ spec.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-footer d-flex align-items-center justify-content-end border-top">
+                        <a href="javascript:void(0);" class="btn btn-light btn-md me-2 fw-medium" id="close-filter">Close</a>
+                        <button type="submit" class="btn btn-primary btn-md fw-medium">Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div> -->
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-nowrap datatable">
+            <thead class="thead-light">
+                <tr>
+                    <th class="no-sort">
+                        Doctor Name
+                    </th>
+                    <th>Phone</th>
+                    <th>Last Visit</th>
+                    <th></th>
+                </tr>
+            </thead>
+           <tbody>
+            {% for doctor in doctors %}
+            <tr>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <a href="{% url 'dashboard:patient_doctor_detail' doctor.pk %}" class="avatar avatar-md me-2">
+                            {% if doctor.user.profile_picture %}
+                                <img src="{{ doctor.user.profile_picture.url }}" alt="{{ doctor.user.full_name }}" class="rounded-circle">
+                            {% else %}
+                                <img src="{% static 'dashboard/assets/img/doctors/doctor-default.jpg' %}" alt="{{ doctor.user.full_name }}" class="rounded-circle">
+                            {% endif %}
+                        </a>
+                        <a href="{% url 'dashboard:patient_doctor_detail' doctor.pk %}" class="text-dark fw-semibold">
+                            Dr. {{ doctor.user.full_name }}
+                            <span class="text-body fs-13 fw-normal d-block">{{ doctor.specialization.name|default:"General Physician" }}</span>
+                        </a>
+                    </div>
+                </td>
+                <td>{{ doctor.user.phone|default:"+1 --- --- ----" }}</td>
+                <td>
+                    {% if doctor.last_visit_date %}
+                        {{ doctor.last_visit_date|date:"d M Y" }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+                <td class="">
+                    <!-- Book Appointment -->
+                    <a href="javascript:void(0);" 
+                    class="border p-1 rounded-3 fs-13 text-body d-inline-flex align-items-center justify-content-center book-appointment-btn"
+                    data-bs-toggle="offcanvas" 
+                    data-bs-target="#new_appointment"
+                    data-doctor-id="{{ doctor.pk }}"
+                    data-doctor-name="Dr. {{ doctor.user.full_name }}">
+                        <i class="ti ti-calendar-plus"></i>
+                    </a>
+
+                    <!-- More Options -->
+                    <a href="javascript:void(0);" data-bs-toggle="dropdown" class="border p-1 rounded-3 fs-13 text-body d-inline-flex align-items-center justify-content-center">
+                        <i class="ti ti-dots-vertical"></i>
+                    </a>
+                    <ul class="dropdown-menu p-2">
+                        <li>
+                            <a href="{% url 'dashboard:patient_doctor_detail' doctor.pk %}" class="dropdown-item d-flex align-items-center">
+                                View Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center book-appointment-btn"
+                            data-bs-toggle="offcanvas" 
+                            data-bs-target="#new_appointment"
+                            data-doctor-id="{{ doctor.pk }}"
+                            data-doctor-name="Dr. {{ doctor.user.full_name }}">
+                                Book Appointment
+                            </a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center py-5 text-muted">
+                    <i class="ti ti-stethoscope fs-1 d-block mb-3"></i>
+                    No doctors found matching your criteria.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    </div>
+    
+</div>
+
+<!-- New Appointment Offcanvas -->
+{% include 'dashboard/partials/_new_appointment_offcanvas.html' %}
+
+
+<div id="edit_doctors" class="modal fade">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="text-dark modal-title">Edit Date</h5>
+                <button type="button" class="btn-close btn-close-modal custom-btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="ti ti-x"></i></button>
+            </div>
+            <form action="#">
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label class="form-label">Date<span class="text-danger ms-1">*</span></label>
+                        <div class="input-group position-relative">
+                            <input type="text" class="form-control datetimepicker rounded-end h-auto py-2 bg-white">
+                            <span class="input-icon-addon fs-16 text-dark">
+                                <i class="ti ti-calendar "></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label">Status<span class="text-danger ms-1">*</span></label>
+                        <select class="select">
+                            <option>Select</option>
+                            <option selected="">Active</option>
+                            <option>Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer d-flex align-items-center gap-1">
+                    <button type="button" class="btn btn-white border" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="delete_modal">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-body text-center position-relative">
+                <img src="{% static 'dashboard/assets/img/bg/delete-modal-bg-01.png' %}" alt="" class="img-fluid position-absolute top-0 start-0 z-0">
+                <img src="{% static 'dashboard/assets/img/bg/delete-modal-bg-02.png' %}" alt="" class="img-fluid position-absolute bottom-0 end-0 z-0">
+                <div class="mb-3 position-relative z-1">
+                    <span class="avatar avatar-lg bg-danger text-white"><i class="ti ti-trash fs-24"></i></span>
+                </div>
+                <h5 class="fw-bold mb-1 position-relative z-1">Delete Confirmation</h5>
+                <p class="mb-3 position-relative z-1">Are you sure want to delete?</p>
+                <div class="d-flex justify-content-center">
+                    <a href="javascript:void(0);" class="btn btn-light position-relative z-1 me-3" data-bs-dismiss="modal">Cancel</a>
+                    <a href="" class="btn btn-danger position-relative z-1" data-bs-dismiss="modal">Yes, Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'dashboard/assets/plugins/select2/js/select2.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/dataTables.bootstrap5.min.js' %}"></script>
+<script>
+document.querySelectorAll('.book-appointment-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const id = btn.dataset.doctorId;
+        const name = btn.dataset.doctorName;
+        
+        // Change these selectors to match your offcanvas form
+        const doctorInput = document.querySelector('#id_doctor');
+        const doctorDisplay = document.querySelector('#selected-doctor-name');
+        
+        if (doctorInput) doctorInput.value = id;
+        if (doctorDisplay) doctorDisplay.textContent = name;
+    });
+});
+</script>
+
+{% endblock %}

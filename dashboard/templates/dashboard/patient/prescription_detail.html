@@ -1,0 +1,157 @@
+{% extends 'dashboard/base_patient.html' %}
+{% load static %}
+{% load mathfilters %}
+
+{% block title %}Prescription {{ prescription.prescription_number }}{% endblock %}
+
+{% block content %}
+<div class="content">
+
+    <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 pb-3 mb-3 border-bottom">
+        <div class="flex-grow-1">
+            <h4 class="fw-bold mb-0">Prescription Details</h4>
+        </div>
+        <div class="text-end">
+            <a href="{% url 'dashboard:patient_prescriptions' %}" class="btn btn-light btn-md me-2">
+                <i class="ti ti-arrow-left me-1"></i> Back
+            </a>
+            <a href="javascript:void(0);" onclick="window.print()" class="btn btn-primary btn-md">
+                <i class="ti ti-printer me-1"></i> Print / Download PDF
+            </a>
+        </div>
+    </div>
+
+    <div class="card" id="print-area">
+        <div class="card-body">
+            
+            <!-- Header -->
+            <div class="row mb-4 border-bottom pb-3">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center">
+                        <img src="{% static 'dashboard/assets/img/logo.svg' %}" alt="Logo" class="me-3" style="height: 50px;">
+                        <div>
+                            <h5 class="fw-bold mb-1">Preclinic Medical</h5>
+                            <p class="text-muted mb-0">123 Health Ave, New York, NY</p>
+                            <p class="text-muted mb-0">+1 555 123 4567</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                    <h6 class="fw-bold text-uppercase text-primary">
+                        Prescription {{ prescription.prescription_number }}
+                    </h6>
+                    <p class="mb-1"><strong>Date:</strong> {{ prescription.created_at|date:"d M Y" }}</p>
+                    <p class="mb-0"><strong>Doctor:</strong> Dr. {{ doctor.user.full_name }}</p>
+                </div>
+            </div>
+
+            <!-- Patient Info -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <h6 class="fw-bold border-bottom pb-2 mb-3">Patient Information</h6>
+                </div>
+                <div class="col-md-4">
+                    <p class="mb-1 text-muted">Name</p>
+                    <h6 class="fw-semibold">{{ request.user.full_name }}</h6>
+                </div>
+                <div class="col-md-4">
+                    <p class="mb-1 text-muted">Age / Gender</p>
+                    <h6 class="fw-semibold">
+                        {% if request.user.patient_profile.date_of_birth %}
+                            {% now "Y" as current_year %}
+                            {% with birth_year=request.user.patient_profile.date_of_birth.year %}
+                                {{ current_year|sub:birth_year }} Years
+                            {% endwith %}
+                            / {{ request.user.get_gender_display }}
+                        {% else %}
+                            — / {{ request.user.get_gender_display }}
+                        {% endif %}
+                    </h6>
+                </div>
+                <div class="col-md-4">
+                    <p class="mb-1 text-muted">Patient ID</p>
+                    <h6 class="fw-semibold">#PT{{ request.user.id|stringformat:"04d" }}</h6>
+                </div>
+            </div>
+
+            <!-- Medicines Table -->
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Medicine Name</th>
+                            <th>Dosage</th>
+                            <th>Duration</th>
+                            <th class="text-center">Time (M-A-E-N)</th>
+                            <th>Instructions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr>
+                            <td class="fw-semibold">{{ item.medicine_name }}</td>
+                            <td>{{ item.dosage }}{% if item.quantity %} ({{ item.quantity }}){% endif %}</td>
+                            <td>{{ item.get_duration_display }}</td>
+                            <td class="text-center">
+                                {% with freq=item.frequency %}
+                                    {% if freq == "once_daily" %}1 - 0 - 0 - 0
+                                    {% elif freq == "twice_daily" %}1 - 0 - 1 - 0
+                                    {% elif freq == "three_times_daily" %}1 - 1 - 1 - 0
+                                    {% elif freq == "four_times_daily" %}1 - 1 - 1 - 1
+                                    {% elif freq == "before_meals" %}✓ - ✓ - ✓ - —
+                                    {% elif freq == "after_meals" %}— - ✓ - ✓ - ✓
+                                    {% elif freq == "at_bedtime" %}0 - 0 - 0 - 1
+                                    {% elif freq == "as_needed" %}PRN
+                                    {% else %}See instructions{% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {{ item.instructions|default:"—" }}
+                                {% if item.frequency == "other" and item.instructions %}
+                                    <br><small class="text-danger">{{ item.instructions }}</small>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">No medicines prescribed</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Notes & Signature -->
+            <div class="row mt-5 pt-4">
+                <div class="col-md-12">
+                    <p class="mb-0"><strong>Notes:</strong> 
+                        {{ prescription.notes|default:"Drink plenty of water. Complete the full course of medication. Contact doctor if symptoms worsen."|linebreaksbr }}
+                    </p>
+                </div>
+                <div class="col-md-12 text-end mt-5">
+                    <div style="display: inline-block; text-align: center;">
+                        {% if doctor.user.profile_picture %}
+                            <img src="{{ doctor.user.profile_picture.url }}" alt="Signature" style="height: 60px; border-radius: 50%; opacity: 0.8;">
+                        {% else %}
+                            <img src="{% static 'dashboard/assets/img/signature.png' %}" alt="Signature" style="height: 40px; opacity: 0.5;">
+                        {% endif %}
+                        <p class="border-top border-dark pt-2 mt-2 mb-0 fw-bold">Dr. {{ doctor.user.full_name }}</p>
+                        <p class="text-muted fs-12">{{ doctor.specialization.name }} • License: {{ doctor.license_number }}</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Print-friendly styles -->
+<style>
+@media print {
+    body * { visibility: hidden; }
+    #print-area, #print-area * { visibility: visible; }
+    #print-area { position: absolute; left: 0; top: 0; width: 100%; }
+    .no-print { display: none !important; }
+}
+</style>
+{% endblock %}

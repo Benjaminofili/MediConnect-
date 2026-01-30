@@ -1,0 +1,308 @@
+{% extends 'dashboard/base_doctor.html' %}
+{% load static %}
+
+{% block title %}{{ patient.full_name }} - Patient Details{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'dashboard/assets/plugins/select2/css/select2.min.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard/assets/css/bootstrap-datetimepicker.min.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard/assets/css/dataTables.bootstrap5.min.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content">
+
+    <!-- TOP PATIENT CARD -->
+    <div class="card mb-4">
+        <div class="row align-items-end">
+            <div class="col-xl-9 col-lg-8">
+                <div class="d-sm-flex align-items-center position-relative z-0 overflow-hidden p-3">
+                    <img src="{% static 'dashboard/assets/img/icons/shape-01.svg' %}" alt="img" class="z-n1 position-absolute end-0 top-0 d-none d-lg-flex">
+                    
+                    <div class="avatar avatar-xxxl patient-avatar me-2 flex-shrink-0">
+                        <img src="{% if patient.profile_picture %}{{ patient.profile_picture.url }}{% else %}{% static 'dashboard/assets/img/users/user-08.jpg' %}{% endif %}" 
+                             alt="{{ patient.full_name }}" class="rounded">
+                    </div>
+                    
+                    <div>
+                        <p class="text-primary mb-1">#PT{{ patient.id|stringformat:"04d" }}</p>
+                        <h5 class="mb-1 fw-bold">{{ patient.full_name }}</h5>
+                        <p class="mb-3">
+                            {{ patient.patient_profile.emergency_contact_name|default:"No emergency contact" }} 
+                            {% if patient.patient_profile.emergency_contact_phone %} 
+                                - {{ patient.patient_profile.emergency_contact_phone }}
+                            {% endif %}
+                        </p>
+                        
+                        <div class="d-flex align-items-center flex-wrap">
+                            <p class="mb-0 d-inline-flex align-items-center">
+                                <i class="ti ti-phone me-1 text-dark"></i>Phone : 
+                                <span class="text-dark ms-1">{{ patient.phone|default:"Not provided" }}</span>
+                            </p>
+                            <span class="mx-2 text-light">|</span>
+                            <p class="mb-0 d-inline-flex align-items-center">
+                                <i class="ti ti-calendar-time me-1 text-dark"></i>Last Visited : 
+                                <span class="text-dark ms-1">
+                                    {% with last_appt=patient.patient_appointments.first %}
+                                        {% if last_appt %}{{ last_appt.date|date:"d M Y" }}{% else %}Never{% endif %}
+                                    {% endwith %}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-lg-4">
+                <div class="p-3 text-lg-end">
+                    <div class="mb-4">
+                        <a href="tel:{{ patient.phone }}" class="btn btn-outline-white shadow-sm rounded-circle d-inline-flex align-items-center p-2 fs-14 me-2" title="Call">
+                            <i class="ti ti-phone"></i>
+                        </a>
+                        <a href="mailto:{{ patient.email }}" class="btn btn-outline-white shadow-sm rounded-circle d-inline-flex align-items-center p-2 fs-14 me-2" title="Email">
+                            <i class="ti ti-message-circle"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="btn btn-outline-white shadow-sm rounded-circle d-inline-flex align-items-center p-2 fs-14" title="Video Call" disabled>
+                            <i class="ti ti-video"></i>
+                        </a>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <a href="#" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#new_appointment">
+                            <i class="ti ti-calendar-event me-1"></i>Book Appointment
+                        </a>
+                        <a href="{% url 'dashboard:doctor_patient_records' patient.id %}" class="btn btn-outline-primary">
+                            <i class="ti ti-notes-medical me-1"></i> View Records
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ABOUT + VITAL SIGNS -->
+    <div class="row mb-4">
+        <div class="col-xl-5 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header">
+                    <h5 class="fw-bold mb-0"><i class="ti ti-user-star me-1"></i>About</h5>
+                </div>
+                <div class="card-body pb-0">
+                    <div class="row">
+                        <div class="col-sm-5">
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="avatar rounded-circle bg-light text-dark flex-shrink-0 me-2"><i class="ti ti-calendar-event fs-16"></i></span>
+                                <div>
+                                    <h6 class="fs-13 fw-bold mb-1">DOB</h6>
+                                    <p class="mb-0">
+                                        {% if patient.date_of_birth %}
+                                            {{ patient.date_of_birth|date:"d M Y" }} 
+                                            <small class="text-muted">({{ patient.patient_profile.get_age }} years)</small>
+                                        {% else %}
+                                            Not provided
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-7">
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="avatar rounded-circle bg-light text-dark flex-shrink-0 me-2"><i class="ti ti-droplet fs-16"></i></span>
+                                <div>
+                                    <h6 class="fs-13 fw-bold mb-1">Blood Group</h6>
+                                    <p class="mb-0">{{ patient.patient_profile.blood_type|default:"Not recorded" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-5">
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="avatar rounded-circle bg-light text-dark flex-shrink-0 me-2"><i class="ti ti-gender-male fs-16"></i></span>
+                                <div>
+                                    <h6 class="fs-13 fw-bold mb-1">Gender</h6>
+                                    <p class="mb-0">{{ patient.gender|title }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-7">
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="avatar rounded-circle bg-light text-dark flex-shrink-0 me-2"><i class="ti ti-mail fs-16"></i></span>
+                                <div>
+                                    <h6 class="fs-13 fw-bold mb-1">Email</h6>
+                                    <p class="mb-0 text-break">{{ patient.email }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+                    <div class="mb-3">
+                        <h6 class="fw-bold mb-2"><i class="ti ti-alert-triangle text-warning me-1"></i>Allergies</h6>
+                        <p class="text-muted small">{{ patient.patient_profile.allergies|default:"No known allergies" }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="fw-bold mb-2"><i class="ti ti-medical-cross text-danger me-1"></i>Chronic Conditions</h6>
+                        <p class="text-muted small">{{ patient.patient_profile.chronic_conditions|default:"None reported" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-7 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header">
+                    <h5 class="fw-bold mb-0"><i class="ti ti-activity-heartbeat me-1"></i>Vital Signs</h5>
+                </div>
+                <div class="card-body pb-0">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="avatar rounded-2 bg-light text-dark flex-shrink-0 me-2 border"><i class="ti ti-weight fs-16"></i></span>
+                                <div>
+                                    <h6 class="fs-13 fw-bold mb-1">Weight</h6>
+                                    <p class="mb-0"><i class="ti ti-point-filled me-1 text-success fs-18"></i>{{ patient.patient_profile.weight_kg|floatformat:1|default:"—" }} kg</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="avatar rounded-2 bg-light text-dark flex-shrink-0 me-2 border"><i class="ti ti-ruler fs-16"></i></span>
+                                <div>
+                                    <h6 class="fs-13 fw-bold mb-1">Height</h6>
+                                    <p class="mb-0"><i class="ti ti-point-filled me-1 text-success fs-18"></i>{{ patient.patient_profile.height_cm|floatformat:0|default:"—" }} cm</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="avatar rounded-2 bg-light text-dark flex-shrink-0 me-2 border"><i class="ti ti-calculator fs-16"></i></span>
+                                <div>
+                                    calculated BMI
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABS: Appointments & Transactions -->
+    <div class="card">
+        <ul class="nav nav-tabs nav-bordered mb-3">
+            <li class="nav-item">
+                <a href="#appointments" data-bs-toggle="tab" class="nav-link active bg-transparent">
+                    <span>Appointments</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#transactions" data-bs-toggle="tab" class="nav-link bg-transparent">
+                    <span>Transactions</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <!-- Appointments Tab -->
+            <div class="tab-pane show active" id="appointments">
+                <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-3 mb-3">
+                    <div class="search-set">
+                        <div class="table-search d-flex align-items-center mb-0">
+                            <div class="search-input">
+                                <a href="javascript:void(0);" class="btn-searchset"></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <a href="javascript:void(0);" class="bg-white border rounded btn btn-md text-dark fs-14 py-1 align-items-center d-flex fw-normal" data-bs-toggle="dropdown">
+                            <i class="ti ti-filter text-gray-5 me-1"></i>Filters
+                        </a>
+                        <div class="dropdown-menu dropdown-lg dropdown-menu-end filter-dropdown p-0">
+                            <div class="d-flex align-items-center justify-content-between border-bottom filter-header">
+                                <h4 class="mb-0 fw-bold">Filter</h4>
+                                <a href="javascript:void(0);" class="link-danger text-decoration-underline">Clear All</a>
+                            </div>
+                            <form action="" method="get">
+                                <div class="filter-body pb-0">
+                                    <div class="mb-3">
+                                        <label class="form-label mb-1">Status</label>
+                                        <select name="status" class="select">
+                                            <option value="">All</option>
+                                            <option value="completed">Completed</option>
+                                            <option value="cancelled">Cancelled</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="filter-footer d-flex align-items-center justify-content-end border-top">
+                                    <button type="submit" class="btn btn-primary btn-md fw-medium">Filter</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-nowrap datatable">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Appointment ID</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appt in appointments %}
+                            <tr>
+                                <td><a href="{% url 'dashboard:doctor_appointment_detail' appt.id %}">#{{ appt.appointment_number }}</a></td>
+                                <td class="text-dark">{{ appt.date|date:"d M Y" }}</td>
+                                <td class="text-dark">{{ appt.start_time|time:"g:i A" }}</td>
+                                <td class="text-dark">{{ appt.reason|default:"General Checkup"|truncatewords:6 }}</td>
+                                <td>
+                                    <span class="badge fs-13 badge-soft-{% if appt.status == 'completed' %}success{% elif appt.status == 'cancelled' %}danger{% else %}warning{% endif %} rounded fw-medium">
+                                        {{ appt.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if appt.status == 'completed' %}
+                                        <a href="{% url 'dashboard:doctor_prescription_create' patient.id %}" class="btn btn-sm btn-outline-success">
+                                            <i class="ti ti-prescription"></i>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">No appointments found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Transactions Tab -->
+            <div class="tab-pane" id="transactions">
+                <div class="p-5 text-center text-muted">
+                    <i class="ti ti-receipt fs-48 mb-3"></i>
+                    <p>Transaction history will appear here once payments are integrated.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW APPOINTMENT OFFCANVAS (YOUR PART 4)-->
+    {% include 'dashboard/partials/_doctor_actions.html' %} 
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'dashboard/assets/plugins/select2/js/select2.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/moment.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/bootstrap-datetimepicker.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/dataTables.bootstrap5.min.js' %}"></script>
+
+
+{% endblock %}

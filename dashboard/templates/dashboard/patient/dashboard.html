@@ -1,0 +1,379 @@
+{% extends 'dashboard/base_patient.html' %}
+{% load static %}
+
+{% block title %}Patient Dashboard{% endblock %}
+
+{% block content %}
+<div class="content pb-0">
+    <!-- Header -->
+    <div class="d-flex align-items-sm-center justify-content-between flex-wrap gap-2 mb-4">
+        <div>
+            <h4 class="fw-bold mb-1">Welcome, {{ user.first_name }}!</h4>
+            <p class="text-muted mb-0">Manage your health journey</p>
+        </div>
+        <div class="d-flex align-items-center flex-wrap gap-2">
+            <a href="#" class="btn btn-primary d-inline-flex align-items-center" 
+               data-bs-toggle="offcanvas" data-bs-target="#new_appointment">
+                <i class="ti ti-plus me-1"></i>New Appointment
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row">
+        <div class="col-xl-4 col-md-6 d-flex">
+            <div class="card flex-fill w-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="avatar bg-primary rounded-circle fs-20 d-inline-flex flex-shrink-0">
+                            <i class="ti ti-calendar-heart"></i>
+                        </span>
+                        <div class="ms-2">
+                            <p class="mb-1 text-truncate">Total Appointments</p>
+                            <h3 class="fw-bold mb-0">{{ total_appointments }}</h3>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="badge fw-medium bg-success flex-shrink-0 me-2">
+                            {{ completed_consultations }} Completed
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-4 col-md-6 d-flex">
+            <div class="card flex-fill w-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="avatar bg-info rounded-circle fs-20 d-inline-flex flex-shrink-0">
+                            <i class="ti ti-calendar-plus"></i>
+                        </span>
+                        <div class="ms-2">
+                            <p class="mb-1 text-truncate">Upcoming</p>
+                            <h3 class="fw-bold mb-0">{{ upcoming_count }}</h3>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <a href="{% url 'dashboard:patient_appointment_calendar' %}" class="text-primary fs-13">View schedule</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-4 col-md-6 d-flex">
+            <div class="card flex-fill w-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="avatar bg-success rounded-circle fs-20 d-inline-flex flex-shrink-0">
+                            <i class="ti ti-stethoscope"></i>
+                        </span>
+                        <div class="ms-2">
+                            <p class="mb-1 text-truncate">My Doctors</p>
+                            <h3 class="fw-bold mb-0">{{ my_doctors|length }}</h3>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <a href="{% url 'dashboard:patient_doctors' %}" class="text-primary fs-13">Find more doctors</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- My Doctors -->
+        <div class="col-xl-4 col-lg-6 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0">My Doctors</h5>
+                    <a href="{% url 'dashboard:patient_doctors' %}" class="text-primary fs-13">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if my_doctors %}
+                        {% for item in my_doctors %}
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center">
+                                <a href="{% url 'dashboard:patient_doctor_detail' item.doctor.id %}" class="avatar me-2 flex-shrink-0">
+                                    {% if item.doctor.user.profile_picture %}
+                                        <img src="{{ item.doctor.user.profile_picture.url }}" alt="img" class="rounded-circle">
+                                    {% else %}
+                                        <span class="avatar-title bg-primary rounded-circle">
+                                            {{ item.doctor.user.first_name|slice:":1" }}{{ item.doctor.user.last_name|slice:":1" }}
+                                        </span>
+                                    {% endif %}
+                                </a>
+                                <div>
+                                    <h6 class="fs-14 mb-1 text-truncate">
+                                        <a href="{% url 'dashboard:patient_doctor_detail' item.doctor.id %}" class="fw-semibold">Dr. {{ item.doctor.user.full_name }}</a>
+                                    </h6>
+                                    <p class="mb-0 fs-13 text-truncate">
+                                        {{ item.doctor.specialization.name|default:"General Physician" }}
+                                    </p>
+                                </div>
+                            </div>
+                            <span class="badge fw-medium badge-soft-primary border border-primary flex-shrink-0">
+                                {{ item.booking_count }} Visits
+                            </span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="ti ti-stethoscope fs-2 text-muted mb-2 d-block"></i>
+                            <p class="text-muted fs-13 mb-0">No doctors yet</p>
+                            <a href="{% url 'dashboard:patient_doctors' %}" class="btn btn-sm btn-primary mt-2">Find a Doctor</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Prescriptions -->
+        <div class="col-xl-4 col-lg-6 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0">Prescriptions</h5>
+                    <a href="#" class="text-primary fs-13">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_prescriptions %}
+                        {% for rx in recent_prescriptions %}
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center flex-shrink-0">
+                                <a href="#" class="avatar me-2 flex-shrink-0 bg-light rounded-circle text-dark">
+                                    <i class="ti ti-file-description text-body fs-20"></i>
+                                </a>
+                                <div>
+                                    <h6 class="fs-14 mb-1 text-truncate">
+                                        <a href="#" class="fw-semibold">{{ rx.prescription_number }}</a>
+                                    </h6>
+                                    <p class="mb-0 fs-13 text-truncate">{{ rx.issued_date|date:"M d, Y" }}</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <a href="{% url 'dashboard:patient_prescription_detail' pk=rx.pk %}" class="btn btn-outline-white d-inline-flex align-items-center shadow-sm me-2 p-1" title="View Prescription">
+                                    <i class="ti ti-eye"></i>
+                                </a>
+                                <a href="{% url 'dashboard:patient_prescription_download' pk=rx.pk %}" class="btn btn-outline-white d-inline-flex align-items-center shadow-sm p-1" title="Download Prescription">
+                                    <i class="ti ti-download"></i>
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="ti ti-file-off fs-2 text-muted mb-2 d-block"></i>
+                            <p class="text-muted fs-13 mb-0">No prescriptions yet</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="col-xl-4 d-flex">
+            <div class="card shadow-sm flex-fill w-100">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="fw-bold mb-0">Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_activity %}
+                        <div class="recent-activity">
+                            {% for activity in recent_activity %}
+                            <div class="d-flex align-items-center mb-3">
+                                <span><i class="ti ti-point-filled fs-24 {{ activity.icon_class }}"></i></span>
+                                <div class="ms-2">
+                                    <p class="mb-1 text-truncate">
+                                        {{ activity.type }} with 
+                                        <a href="#" class="fw-semibold">{{ activity.description }}</a>
+                                    </p>
+                                    <p class="fs-13 mb-0 text-muted">{{ activity.timestamp|timesince }} ago</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="ti ti-activity fs-2 text-muted mb-2 d-block"></i>
+                            <p class="text-muted fs-13 mb-0">No recent activity</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vitals -->
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h5 class="fw-bold mb-0">My Vitals</h5>
+        </div>
+        <div class="card-body">
+            <div class="row row-gap-3 row-cols-1 row-cols-xl-4 row-cols-md-2">
+                <div class="col d-flex">
+                    <div class="p-3 border shadow-sm flex-fill w-100 rounded-2">
+                        <div class="d-flex align-items-center">
+                            <span class="avatar bg-primary rounded-circle flex-shrink-0">
+                                <i class="ti ti-scale fs-20 text-white"></i>
+                            </span>
+                            <div class="ms-2">
+                                <p class="mb-1 text-muted">Weight</p>
+                                <p class="text-truncate mb-0">
+                                    <span class="fs-18 fw-bold text-dark">
+                                        {{ vitals.weight|default:"-" }}
+                                    </span> 
+                                    {% if vitals.weight %}Kg{% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col d-flex">
+                    <div class="p-3 border shadow-sm flex-fill w-100 rounded-2">
+                        <div class="d-flex align-items-center">
+                            <span class="avatar bg-success rounded-circle flex-shrink-0">
+                                <i class="ti ti-ruler fs-20 text-white"></i>
+                            </span>
+                            <div class="ms-2">
+                                <p class="mb-1 text-muted">Height</p>
+                                <p class="text-truncate mb-0">
+                                    <span class="fs-18 fw-bold text-dark">
+                                        {{ vitals.height|default:"-" }}
+                                    </span>
+                                    {% if vitals.height %}cm{% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col d-flex">
+                    <div class="p-3 border shadow-sm flex-fill w-100 rounded-2">
+                        <div class="d-flex align-items-center">
+                            <span class="avatar bg-danger rounded-circle flex-shrink-0">
+                                <i class="ti ti-droplet fs-20 text-white"></i>
+                            </span>
+                            <div class="ms-2">
+                                <p class="mb-1 text-muted">Blood Type</p>
+                                <p class="text-truncate mb-0">
+                                    <span class="fs-18 fw-bold text-dark">
+                                        {{ vitals.blood_type|default:"-" }}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col d-flex">
+                    <div class="p-3 border shadow-sm flex-fill w-100 rounded-2 bg-light">
+                        <div class="d-flex align-items-center justify-content-center h-100">
+                            <a href="{% url 'dashboard:patient_profile' %}" class="btn btn-outline-primary btn-sm">
+                                <i class="ti ti-edit me-1"></i>Update Vitals
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Appointments Table -->
+    <div class="card shadow-sm flex-fill w-100">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="fw-bold mb-0">Recent Appointments</h5>
+            <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+        </div>
+        <div class="card-body">
+            {% if recent_appointments %}
+            <div class="table-responsive table-nowrap">
+                <table class="table border mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Doctor</th>
+                            <th>Date & Time</th>
+                            <th>Fee</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for apt in recent_appointments %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <a href="{% url 'dashboard:patient_doctor_detail' apt.doctor.id %}" class="avatar me-2">
+                                        {% if apt.doctor.user.profile_picture %}
+                                            <img src="{{ apt.doctor.user.profile_picture.url }}" alt="img" class="rounded-circle">
+                                        {% else %}
+                                            <span class="avatar-title bg-primary rounded-circle">
+                                                {{ apt.doctor.user.first_name|slice:":1" }}{{ apt.doctor.user.last_name|slice:":1" }}
+                                            </span>
+                                        {% endif %}
+                                    </a>
+                                    <div>
+                                        <h6 class="fs-14 mb-1">
+                                            <a href="{% url 'dashboard:patient_doctor_detail' apt.doctor.id %}" class="fw-semibold">Dr. {{ apt.doctor.user.full_name }}</a>
+                                        </h6>
+                                        <p class="mb-0 fs-13">
+                                            {{ apt.doctor.specialization.name|default:"General" }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {{ apt.date|date:"M d, Y" }}<br>
+                                <small class="text-muted">{{ apt.start_time|time:"h:i A" }}</small>
+                            </td>
+                            <td class="fw-semibold text-dark">${{ apt.doctor.consultation_fee }}</td>
+                            <td>
+                                {% if apt.status == 'confirmed' %}
+                                    <span class="badge bg-success fw-medium">Confirmed</span>
+                                {% elif apt.status == 'pending' %}
+                                    <span class="badge bg-warning fw-medium">Pending</span>
+                                {% elif apt.status == 'completed' %}
+                                    <span class="badge bg-primary fw-medium">Completed</span>
+                                {% elif apt.status == 'cancelled' %}
+                                    <span class="badge bg-danger fw-medium">Cancelled</span>
+                                {% else %}
+                                    <span class="badge bg-secondary fw-medium">{{ apt.status|title }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if apt.can_join %}
+                                    <a href="{{ apt.video_room_url }}" target="_blank" class="btn btn-sm btn-success">
+                                        <i class="ti ti-video me-1"></i>Join
+                                    </a>
+                                {% elif apt.status == 'completed' %}
+                                    <a href="{% url 'dashboard:patient_appointment_detail' pk=apt.id %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="ti ti-eye me-1"></i>View
+                                    </a>
+                                {% elif apt.can_cancel %}
+                                    <a href="#" class="btn btn-sm btn-outline-danger">
+                                        <i class="ti ti-x me-1"></i>Cancel
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="ti ti-calendar-off fs-1 text-muted mb-3 d-block"></i>
+                <h6 class="text-muted">No appointments yet</h6>
+                <p class="text-muted fs-13">Book your first appointment with a doctor</p>
+                <a href="#" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#new_appointment">
+                    <i class="ti ti-plus me-1"></i>Book Appointment
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- New Appointment Offcanvas (placeholder) -->
+{% include 'dashboard/partials/_new_appointment_offcanvas.html' %}
+
+{% endblock %}

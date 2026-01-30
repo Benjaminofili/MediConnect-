@@ -1,0 +1,265 @@
+{% extends 'dashboard/base_patient.html' %}
+{% load static %}
+
+{% block title %}Dr. {{ doctor.user.full_name }} - Doctor Profile{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'dashboard/assets/plugins/select2/css/select2.min.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard/assets/css/bootstrap-datetimepicker.min.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content">
+
+    <!-- Header -->
+    <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 pb-3 mb-3 border-bottom">
+        <div class="flex-grow-1">
+            <h4 class="fw-semibold mb-0">Doctor Details</h4>
+        </div>
+    </div>
+
+    <!-- Doctor Card -->
+    <div class="card mb-4">
+        <div class="card-body d-flex align-items-center justify-content-between flex-wrap row-gap-3">
+            <div class="d-flex align-items-center flex-sm-nowrap flex-wrap row-gap-3">
+                <div class="me-3 doctor-profile-img">
+                    {% if doctor.user.profile_picture %}
+                        <img src="{{ doctor.user.profile_picture.url }}" class="rounded" alt="{{ doctor.user.full_name }}" style="width: 120px; height: 120px; object-fit: cover;">
+                    {% else %}
+                        <img src="{% static 'dashboard/assets/img/doctors/doctor-default.jpg' %}" class="rounded" alt="Doctor">
+                    {% endif %}
+                </div>
+                <div class="flex-fill">
+                    <div class="d-flex align-items-center mb-1">
+                        <h6 class="mb-0 fw-semibold">Dr. {{ doctor.user.full_name }}</h6>
+                        <span class="badge border bg-white text-dark fw-medium ms-2">
+                            <i class="ti ti-point-filled me-1 text-info"></i>{{ doctor.specialization.name }}
+                        </span>
+                    </div>
+                    <span class="d-block mb-3 fs-13">{{ doctor.education|default:"MBBS, MD" }}</span>
+                    <div class="d-flex align-items-center flex-wrap gap-3">
+                        <p class="mb-0 fs-13"><i class="ti ti-building-hospital me-1"></i>Clinic: {{ doctor.hospital_name|default:"Private Practice" }}</p>
+                        <span class="badge badge-soft-success fw-medium">
+                            <i class="ti ti-point-filled me-1 text-success"></i>Available Today
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="text-end">
+                <p class="mb-2 text-muted">Consultation Fee</p>
+                <h5 class="fs-20 fw-bold mb-3">${{ doctor.consultation_fee }} <span class="fw-normal text-body fs-14">/ 30 Min</span></h5>
+                <a href="javascript:void(0);" class="btn btn-primary btn-lg px-4 book-now-btn"
+                   data-bs-toggle="offcanvas" data-bs-target="#book_appointment"
+                   data-doctor-id="{{ doctor.pk }}" data-doctor-name="Dr. {{ doctor.user.full_name }}">
+                    <i class="ti ti-calendar-event me-1"></i>Book Appointment
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+
+            <!-- Availability Tabs -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">Available Slots (Next 7 Days)</h5>
+                    
+                    {% if slots_by_date %}
+                        <div class="row g-3">
+                            {% for date_obj, slots in slots_by_date.items %}
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3 bg-light">
+                                        <h6 class="fw-bold mb-2">{{ date_obj|date:"l, d M Y" }}</h6>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            {% for slot in slots %}
+                                                <button type="button" class="btn btn-outline-primary btn-sm slot-btn"
+                                                        data-date="{{ slot.date }}" 
+                                                        data-start="{{ slot.start_time|time:'H:i' }}"
+                                                        data-end="{{ slot.end_time|time:'H:i' }}">
+                                                    {{ slot.start_time|time:"h:i A" }} - {{ slot.end_time|time:"h:i A" }}
+                                                </button>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <div class="text-center py-5 text-muted">
+                                    <i class="ti ti-calendar-off fs-1 d-block mb-3"></i>
+                                    No slots available in the next 7 days.
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5 text-muted">
+                            <i class="ti ti-calendar-off fs-1 d-block mb-3"></i>
+                            No available slots in the next 7 days.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Bio -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">About Doctor</h5>
+                    <p class="text-muted">{{ doctor.bio|default:"Experienced and compassionate healthcare professional dedicated to providing excellent patient care."|linebreaks }}</p>
+                </div>
+            </div>
+
+            <!-- Education -->
+           {% if doctor.education %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-3">Education</h5>
+                        {% for edu in doctor.education|make_list %}
+                            {% if edu != "\n" and edu|length > 1 %}
+                            <div class="d-flex mb-3">
+                                <div class="flex-shrink-0">
+                                    <i class="ti ti-graduation-cap text-primary fs-5"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <p class="mb-0 fw-semibold">{{ doctor.education }}</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% empty %}
+                            <p class="text-muted">No education details provided.</p>
+                        {% endfor %}
+
+                        <!-- Simple fallback – just show the text with line breaks -->
+                        <div class="mt-3">
+                            {{ doctor.education|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4 theiaStickySidebar">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-4">Doctor Information</h6>
+                    
+                    <div class="info-item d-flex mb-4">
+                        <span class="avatar rounded-circle bg-light text-dark flex-shrink-0 me-3"><i class="ti ti-id-badge"></i></span>
+                        <div>
+                            <p class="text-muted small mb-1">License Number</p>
+                            <p class="fw-semibold">{{ doctor.license_number }}</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item d-flex mb-4">
+                        <span class="avatar rounded-circle bg-light text-dark flex-shrink-0 me-3"><i class="ti ti-phone"></i></span>
+                        <div>
+                            <p class="text-muted small mb-1">Phone</p>
+                            <p class="fw-semibold">{{ doctor.user.phone|default:"Not provided" }}</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item d-flex mb-4">
+                        <span class="avatar rounded-circle bg-light text-dark flex-shrink-0 me-3"><i class="ti ti-mail"></i></span>
+                        <div>
+                            <p class="text-muted small mb-1">Email</p>
+                            <p class="fw-semibold">{{ doctor.user.email }}</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item d-flex mb-4">
+                        <span class="avatar rounded-circle bg-light text-dark flex-shrink-0 me-3"><i class="ti ti-star"></i></span>
+                        <div>
+                            <p class="text-muted small mb-1">Rating</p>
+                            <p class="fw-semibold">★ {{ doctor.average_rating|floatformat:1 }} ({{ doctor.total_reviews }} reviews)</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item d-flex mb-4">
+                        <span class="avatar rounded-circle bg-light text-dark flex-shrink-0 me-3"><i class="ti ti-user-check"></i></span>
+                        <div>
+                            <p class="text-muted small mb-1">Experience</p>
+                            <p class="fw-semibold">{{ doctor.experience_years }} Years</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Book Appointment Offcanvas -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="book_appointment">
+    <div class="offcanvas-header border-bottom pb-3">
+        <h5 class="offcanvas-title fw-bold">Book Appointment</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+    <form id="appointment-form" method="post" action="{% url 'dashboard:patient_create_appointment' %}">
+        {% csrf_token %}
+        <input type="hidden" name="doctor" value="{{ doctor.pk }}">
+        <input type="hidden" name="slot_date" id="slot-date-input">
+        <input type="hidden" name="slot_start" id="slot-start-input">
+            
+            <div class="mb-3">
+                <label class="form-label">Doctor</label>
+                <input type="text" class="form-control bg-light" value="Dr. {{ doctor.user.full_name }} - {{ doctor.specialization.name }}" readonly>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Select Date & Time <span class="text-danger">*</span></label>
+                <div id="selected-slot-display" class="alert alert-info d-none">
+                    <strong>Selected:</strong> <span id="slot-text"></span>
+                    <input type="hidden" name="slot_date" id="slot-date-input">
+                    <input type="hidden" name="slot_start" id="slot-start-input">
+                </div>
+                <p class="text-muted small">Click on an available slot above</p>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Reason for Visit</label>
+                <textarea name="reason" rows="4" class="form-control" placeholder="Briefly describe your concern..."></textarea>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-light flex-fill" data-bs-dismiss="offcanvas">Cancel</button>
+                <button type="submit" class="btn btn-primary flex-fill" id="confirm-booking-btn" disabled>Confirm Booking</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'dashboard/assets/js/moment.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/bootstrap-datetimepicker.min.js' %}"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const slotBtns = document.querySelectorAll('.slot-btn');
+    const display = document.getElementById('selected-slot-display');
+    const slotText = document.getElementById('slot-text');
+    const dateInput = document.getElementById('slot-date-input');
+    const startInput = document.getElementById('slot-start-input');
+    const confirmBtn = document.getElementById('confirm-booking-btn');
+
+    slotBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            slotBtns.forEach(b => b.classList.remove('btn-primary', 'text-white'));
+            this.classList.add('btn-primary', 'text-white');
+            
+            const date = this.dataset.date;
+            const start = this.dataset.start;
+            const end = this.dataset.end;
+            
+            slotText.textContent = `${date} from ${start} to ${end}`;
+            dateInput.value = date;           // → goes to request.POST.get('slot_date')
+            startInput.value = start;         // → goes to request.POST.get('slot_start')
+            
+            display.classList.remove('d-none');
+            confirmBtn.disabled = false;
+        });
+    });
+});
+</script>
+{% endblock %}

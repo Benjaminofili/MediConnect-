@@ -1,0 +1,90 @@
+{% load static %}
+
+<!-- Sidebar Start -->
+<div class="sidebar" id="sidebar">
+    
+    <!-- Logo Section -->
+    <div class="sidebar-logo">
+        <div>
+            <!-- Logo Normal -->
+            <a href="{% url 'dashboard:doctor_dashboard' %}" class="logo logo-normal">
+                <img src="{% static 'dashboard/assets/img/logo.svg' %}" alt="Logo">
+            </a>
+
+            <!-- Logo Small (collapsed sidebar) -->
+            <a href="{% url 'dashboard:doctor_dashboard' %}" class="logo-small">
+                <img src="{% static 'dashboard/assets/img/logo-small.svg' %}" alt="Logo">
+            </a>
+
+            <!-- Logo Dark Mode -->
+            <a href="{% url 'dashboard:doctor_dashboard' %}" class="dark-logo">
+                <img src="{% static 'dashboard/assets/img/logo-white.svg' %}" alt="Logo">
+            </a>
+        </div>
+        
+        <button class="sidenav-toggle-btn btn border-0 p-0 active" id="toggle_btn"> 
+            <i class="ti ti-arrow-left text-body"></i>
+        </button>
+
+        <!-- Sidebar Close (Mobile) -->
+        <button class="sidebar-close">
+            <i class="ti ti-x align-middle"></i>
+        </button>                
+    </div>
+    <!-- End Logo -->
+
+    <!-- Sidebar Menu -->
+    <div class="sidebar-inner" data-simplebar>                
+        <div id="sidebar-menu" class="sidebar-menu">
+            <ul>
+                <li class="menu-title"><span>Main Menu</span></li>
+                <li>
+                    <ul>
+                        <!-- Dashboard -->
+                        <li class="{% if request.resolver_match.url_name == 'doctor_dashboard' %}active{% endif %}">
+                            <a href="{% url 'dashboard:doctor_dashboard' %}">
+                                <i class="ti ti-layout-dashboard"></i><span>Dashboard</span>
+                            </a>
+                        </li>
+                        
+                        <!-- Appointments -->
+                        <li class="{% if request.resolver_match.url_name == 'doctor_appointments' %}active{% endif %}">
+                            <a href="{% url 'dashboard:doctor_appointments' %}">
+                                <i class="ti ti-calendar-check"></i><span>Appointments</span>
+                            </a>
+                        </li>
+                        
+                        <!-- My Patients -->
+                        <li class="{% if 'patient' in request.resolver_match.url_name %}active{% endif %}">
+                            <a href="{% url 'dashboard:doctor_patients' %}">
+                                <i class="ti ti-users"></i><span>My Patients</span>
+                            </a>
+                        </li>
+                        
+                        <!-- Prescriptions -->
+                        <li class="{% if 'prescription' in request.resolver_match.url_name %}active{% endif %}">
+                            <a href="{% url 'dashboard:doctor_prescriptions' %}">
+                                <i class="ti ti-prescription"></i><span>Prescriptions</span>
+                            </a>
+                        </li>
+                        
+                        <!-- Settings -->
+                        <li class="submenu">
+                            <a href="javascript:void(0);">
+                                <i class="ti ti-settings"></i><span>Settings</span>
+                                <span class="menu-arrow"></span>
+                            </a>
+                            <ul>
+                                <li><a href="{% url 'dashboard:doctor_profile' %}">Profile Settings</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                            
+            </ul>                   
+        </div>
+    </div>
+    <!-- End Sidebar Menu -->
+
+</div>
+<!-- Sidebar End -->

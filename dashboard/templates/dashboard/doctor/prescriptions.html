@@ -1,0 +1,111 @@
+{% extends 'dashboard/base_doctor.html' %}
+{% load static %}
+
+{% block title %}Prescriptions{% endblock %}
+
+{% block content %}
+<div class="content">
+
+    <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 pb-3 mb-3 border-1 border-bottom">
+        <div class="flex-grow-1">
+            <h4 class="fw-bold mb-0">Prescriptions</h4>
+        </div>
+        <div class="text-end d-flex">
+            <div class="dropdown me-1">
+                <a href="javascript:void(0);" class="btn btn-md fs-14 fw-normal border bg-white rounded text-dark d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                    Export<i class="ti ti-chevron-down ms-2"></i>
+                </a>
+                <ul class="dropdown-menu p-2">
+                    <li><a class="dropdown-item" href="{% url 'dashboard:doctor_prescriptions_export' format='pdf' %}">Download as PDF</a></li>
+                    <li><a class="dropdown-item" href="{% url 'dashboard:doctor_prescriptions_export' format='excel' %}">Download as Excel</a></li>
+                </ul>
+            </div>
+            
+        </div>
+    </div>
+    <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-3 mb-3">
+        <div class="search-set">
+            <div class="table-search d-flex align-items-center mb-0">
+                <div class="search-input">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-nowrap datatable">
+            <thead class="thead-light">
+                <tr>
+                    <th class="no-sort">Created Date</th>
+                    <th>Prescription ID</th>
+                    <th>Patient</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pres in prescriptions %}
+                {% with patient=pres.consultation.appointment.patient %}
+                <tr>
+                    <td>{{ pres.created_at|date:"d M Y" }}</td>
+                    <td>
+                        <span class="badge bg-primary-light fw-medium" style="color: black;">
+                            {% if pres.prescription_number %}
+                                {{ pres.prescription_number }}
+                            {% else %}
+                                RX-{{ pres.id|stringformat:"06d" }}
+                            {% endif %}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <a href="{% url 'dashboard:doctor_patient_detail' pk=patient.id %}" class="avatar avatar-md me-2">
+                                {% if patient.profile_picture %}
+                                    <img src="{{ patient.profile_picture.url }}" alt="patient" class="rounded-circle">
+                                {% else %}
+                                    <span class="avatar-title bg-primary rounded-circle text-white">
+                                        {{ patient.first_name|slice:":1" }}{{ patient.last_name|slice:":1" }}
+                                    </span>
+                                {% endif %}
+                            </a>
+                            <a href="{% url 'dashboard:doctor_patient_detail' pk=patient.id %}" class="text-dark fw-semibold">
+                                {{ patient.full_name }}
+                                <span class="text-body fs-13 fw-normal d-block">
+                                    #PT{{ patient.id|stringformat:"04d" }}
+                                </span>
+                            </a>
+                        </div>
+                    </td>
+                    <td class="action-item">
+                        <a href="{% url 'dashboard:doctor_prescription_detail' pk=pres.pk %}" class="me-2" data-bs-toggle="tooltip" title="View">
+                            <i class="ti ti-eye"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endwith %}
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center py-5">
+                        <div class="text-muted">
+                            <i class="ti ti-file-off fs-1 d-block mb-3"></i>
+                            <h5>No prescriptions found</h5>
+                            <p>Prescriptions you issue will appear here.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    </div>
+    </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'dashboard/assets/plugins/select2/js/select2.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/moment.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/bootstrap-datetimepicker.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/dataTables.bootstrap5.min.js' %}"></script>
+
+
+{% endblock %}

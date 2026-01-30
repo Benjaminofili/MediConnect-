@@ -1,0 +1,76 @@
+{% extends 'dashboard/auth/base_auth.html' %}
+{% load static %}
+
+{% block title %}Login - MediConnect{% endblock %}
+
+{% block content %}
+<form method="post" class="d-flex flex-column justify-content-center">
+    {% csrf_token %}
+    <div class="d-flex flex-column justify-content-lg-center p-4 p-lg-0 pb-0 flex-fill">
+        <div class="mx-auto mb-4 text-center">
+            <img src="{% static 'dashboard/assets/img/logo.svg' %}" class="img-fluid" alt="Logo">
+        </div>
+        <div class="card border-1 p-lg-3 shadow-sm rounded-3 mb-4">
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <h5 class="mb-1 fs-20 fw-bold">Sign In</h5>
+                    <p class="mb-0">Enter your details to access your dashboard</p>
+                </div>
+
+                {% if form.errors %}
+                <div class="alert alert-danger">Invalid email or password.</div>
+                {% endif %}
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        {% comment %}Only show auth-related messages on login page - filter out document/profile messages{% endcomment %}
+                        {% with message_text=message|stringformat:"s"|lower %}
+                            {% if 'document' not in message_text and 'profile' not in message_text and 'medical history' not in message_text and 'uploaded' not in message_text and 'deleted' not in message_text and 'updated' not in message_text or 'logout' in message_text or 'welcome' in message_text or message.tags == 'error' or message.tags == 'warning' %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message|safe }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    {% endfor %}
+                {% endif %}
+                <div class="mb-3">
+                    <label class="form-label">Email Address</label>
+                    <div class="input-group">
+                        <span class="input-group-text border-end-0 bg-white"><i class="ti ti-mail fs-14 text-dark"></i></span>
+                        <input type="email" name="email" class="form-control border-start-0 ps-0" placeholder="Enter Email Address" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <div class="pass-group input-group position-relative border rounded">
+                        <span class="input-group-text bg-white border-0"><i class="ti ti-lock text-dark fs-14"></i></span>
+                        <input type="password" name="password" class="pass-input form-control ps-0 border-0" placeholder="****************" required>
+                        <span class="input-group-text bg-white border-0"><i class="ti toggle-password ti-eye-off text-dark fs-14"></i></span>
+                    </div>
+                </div>
+                
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="form-check form-check-md mb-0">
+                        <input class="form-check-input" id="remember_me" type="checkbox">
+                        <label for="remember_me" class="form-check-label mt-0 text-dark">Remember Me</label>
+                    </div>
+                    <div class="text-end">
+                        <a href="{% url 'dashboard:forgot_password' %}" class="text-danger">Forgot Password?</a>
+                    </div>
+                </div>
+
+                <div class="mb-2">
+                    <button type="submit" class="btn bg-primary text-white w-100">Login</button>
+                </div>
+
+                <div class="text-center mt-3">
+                    <h6 class="fw-normal fs-14 text-dark mb-0">Don’t have an account yet? 
+                        <a href="{% url 'dashboard:register_choice' %}" class="text-primary hover-a"> Register</a>
+                    </h6>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

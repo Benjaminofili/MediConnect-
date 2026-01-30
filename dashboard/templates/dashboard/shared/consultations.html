@@ -1,0 +1,345 @@
+{% extends base_template %}
+{% load static %}
+
+{% block title %}Online Consultation{% endblock %}
+
+{% block content %}
+<div class="content">
+
+    <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 pb-3 mb-3 border-1 border-bottom">
+        <div class="flex-grow-1">
+            <h4 class="fw-bold mb-0"> Online Consultations </h4>
+        </div>
+        <div class="text-end d-flex">
+            <div class="dropdown me-1">
+                <a href="javascript:void(0);" class="btn btn-md fs-14 fw-normal border bg-white rounded text-dark d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                    Export<i class="ti ti-chevron-down ms-2"></i>
+                </a>
+                <ul class="dropdown-menu p-2">
+                    <li><a class="dropdown-item" href="#">Download as PDF</a></li>
+                    <li><a class="dropdown-item" href="#">Download as Excel</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="card rounded-0">
+        <div class="card-header">
+            <h5 class="m-0 fw-bold"> Basic Information </h5>
+        </div>
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="avatar avatar-xxxl">
+                            <img src="{% static 'dashboard/assets/img/users/user-04.jpg' %}" alt="user-01" class="img-fluid img1 rounded">
+                        </div>
+                        <div class="">
+                            <span class="badge badge-md text-info border border-info mb-1 fs-13 fw-medium px-2 "> #AP02254 </span>
+                            <h5 class="text-dark mb-1 fw-bold"> James Carter </h5>
+                            <p class="text-dark m-0"> <span class="text-body"> Reason : </span>  Pain near left chest, Pelvic salinity</p>
+                        </div>
+                    </div>
+                </div> 
+
+                <div class="col-lg-6">
+                    <div class="bg-light p-3 rounded d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="mb-2">
+                                <h6 class="text-dark fs-14 fw-semibold mb-1"> Age </h6>
+                                <p class="text-body fs-13 m-0"> 28 Years </p>
+                            </div>
+                            <div>
+                                <h6 class="text-dark fs-14 fw-semibold mb-1"> Department </h6>
+                                <p class="text-body fs-13 m-0"> Cardiology </p>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="mb-2">
+                                <h6 class="text-dark fs-14 fw-semibold mb-1"> Date </h6>
+                                <p class="text-body fs-13 m-0">25 Jan 2024, 07:00 </p>
+                            </div>
+                            <div>
+                                <h6 class="text-dark fs-14 fw-semibold mb-1"> Gender </h6>
+                                <p class="text-body fs-13 m-0"> Male</p>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="mb-2">
+                                <h6 class="text-dark fs-14 fw-semibold mb-1"> Blood Group </h6>
+                                <p class="text-body fs-13 m-0"> O+ve  </p>
+                            </div>
+                            <div>
+                                <h6 class="text-dark fs-14 fw-semibold mb-1"> Consultation Type </h6>
+                                <p class="text-body fs-13 m-0">Online Consultation </p>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+            </div>
+        </div>
+    </div>
+    <div class="card rounded-0">
+        <div class="card-header">
+            <h5 class="m-0 fw-bold"> Vitals </h5>
+        </div>
+        <div class="card-body pb-0">
+            <form>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Temperature</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <span class="input-group-text bg-transparent text-dark fs-14 border">F</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Pulse</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <span class="input-group-text bg-transparent text-dark fs-14 border">bpm</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">BP</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <span class="input-group-text bg-transparent text-dark fs-14 border">mmHg</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">SPO2</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <span class="input-group-text bg-transparent text-dark fs-14 border">%</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Height</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <span class="input-group-text bg-transparent text-dark fs-14 border">cm</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Weight</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <span class="input-group-text bg-transparent text-dark fs-14 border">kg</span>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="card rounded-0">
+        <div class="card-header">
+            <h5 class="m-0 fw-bold"> Complaint </h5>
+        </div>
+        <div class="card-body">
+            <div id="complaint-list">
+                <div class="mb-3 complaint-item row align-items-end">
+                    <div class="col-11">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Complaint</label>
+                        <input type="text" class="form-control rounded" value="Headache in Leftside">
+                    </div>
+                    <div class="col-1">
+                        <a href="javascript:void(0);" class="add-complaint btn btn-light text-dark w-100"><i class="ti ti-plus"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card rounded-0">
+        <div class="card-header">
+            <h5 class="m-0 fw-bold"> Diagnosis </h5>
+        </div>
+        <div class="card-body pb-0">
+            <div id="diagnosis-list">
+                <div class="row diagnosis-item mb-3">
+                    <div class="col-lg-6">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Diagnosis Type</label>
+                        <select class="select2 form-control rounded">
+                            <option>Select</option>
+                            <option>Fever</option>
+                            <option>Headache</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-5">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Description</label>
+                        <input type="text" class="form-control rounded">
+                    </div>
+                    <div class="col-lg-1 d-flex align-items-end">
+                        <a href="javascript:void(0);" class="add-diagnosis btn btn-light text-dark w-100"><i class="ti ti-plus"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card rounded-0">
+        <div class="card-header">
+            <h5 class="m-0 fw-bold"> Medications </h5>
+        </div>
+        <div class="card-body pb-0">
+            <div id="medication-list">
+                <div class="row medication-item mb-3">
+                    <div class="col-lg-11">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <label class="form-label mb-1 text-dark fs-14 fw-medium">Medicine Name</label>
+                                <select class="select2 form-control rounded">
+                                    <option>Select</option>
+                                    <option>Paracetamol</option>
+                                    <option>Amoxicillin</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-2">
+                                <label class="form-label mb-1 text-dark fs-14 fw-medium">Dosage</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control">
+                                    <span class="input-group-text bg-transparent text-dark fs-14 border">mg</span>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <label class="form-label mb-1 text-dark fs-14 fw-medium">Frequency</label>
+                                <select class="select form-control rounded">
+                                    <option>1-0-1</option>
+                                    <option>1-1-1</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-2">
+                                <label class="form-label mb-1 text-dark fs-14 fw-medium">Timing</label>
+                                <select class="select form-control rounded">
+                                    <option>After Meal</option>
+                                    <option>Before Meal</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-3">
+                                <label class="form-label mb-1 text-dark fs-14 fw-medium">Instruction</label>
+                                <input type="text" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-1 d-flex align-items-end">
+                        <a href="javascript:void(0);" class="add-medication btn btn-light text-dark w-100"><i class="ti ti-plus"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card rounded-0">
+        <div class="card-header">
+            <h5 class="m-0 fw-bold"> Follow Up </h5>
+        </div>
+        <div class="card-body pb-0">
+             <div class="row">
+                <div class="col-lg-6">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Next Consultation </label>
+                        <div class="input-icon-end position-relative">  
+                            <input type="text" class="form-control datetimepicker" placeholder="dd/mm/yyyy">
+                            <span class="input-icon-addon"><i class="ti ti-calendar"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="mb-3">
+                        <label class="form-label mb-1 text-dark fs-14 fw-medium">Instructions</label>
+                        <input type="text" class="form-control rounded">
+                    </div>
+                </div>
+             </div>
+        </div>
+    </div> 
+    <div class="d-flex gap-2 align-items-center justify-content-end mb-4">
+        <a href="#" class="btn btn-md bg-light text-dark fs-13 fw-medium rounded" data-bs-toggle="modal" data-bs-target="#cancel_reason"> Cancel </a>
+        <a href="#" class="btn btn-md btn-primary fs-13 fw-medium rounded"> Complete Appointment </a>
+    </div>
+               
+</div>
+
+<div class="modal fade" id="cancel_reason">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-dark fw-bold">Cancel Reason</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label mb-1 text-dark fs-14 fw-medium">Reason</label>
+                    <select class="select form-control rounded">
+                        <option>Patient Not Available</option>
+                        <option>Doctor Not Available</option>
+                        <option>Technical Issue</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label mb-1 text-dark fs-14 fw-medium">Comments</label>
+                    <textarea rows="4" class="form-control rounded"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary btn-sm">Cancel Appointment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'dashboard/assets/plugins/select2/js/select2.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/moment.min.js' %}"></script>
+<script src="{% static 'dashboard/assets/js/bootstrap-datetimepicker.min.js' %}"></script>
+
+<script>
+    $(document).ready(function() {
+        // 1. Initialize Plugins
+        function initPlugins() {
+            $('.select2').select2({
+                minimumResultsForSearch: -1,
+                width: '100%'
+            });
+            $('.datetimepicker').datetimepicker({
+                format: 'DD/MM/YYYY',
+                icons: {
+                    up: "fas fa-angle-up",
+                    down: "fas fa-angle-down",
+                    next: 'fas fa-angle-right',
+                    previous: 'fas fa-angle-left'
+                }
+            });
+        }
+        initPlugins();
+
+        // 2. Generic Function to Add Rows
+        function addRow(wrapperId, itemClass) {
+            var $wrapper = $('#' + wrapperId);
+            var $clone = $wrapper.find('.' + itemClass).first().clone();
+            
+            // Clear input values in the clone
+            $clone.find('input').val('');
+            $clone.find('select').val('').trigger('change');
+            
+            // Change Plus button to Trash button in the clone
+            var $btn = $clone.find('.btn');
+            $btn.removeClass('add-' + itemClass.split('-')[0] + ' btn-light text-dark')
+                .addClass('remove-row btn-danger text-white')
+                .html('<i class="ti ti-trash"></i>');
+            
+            $wrapper.append($clone);
+            initPlugins(); // Re-init plugins for new row
+        }
+
+        // 3. Event Listeners
+        $(document).on('click', '.add-complaint', function() { addRow('complaint-list', 'complaint-item'); });
+        $(document).on('click', '.add-diagnosis', function() { addRow('diagnosis-list', 'diagnosis-item'); });
+        $(document).on('click', '.add-medication', function() { addRow('medication-list', 'medication-item'); });
+
+        $(document).on('click', '.remove-row', function() {
+            $(this).closest('.row, .complaint-item').remove();
+        });
+    });
+</script>
+{% endblock %}

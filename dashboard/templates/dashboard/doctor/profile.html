@@ -1,0 +1,216 @@
+{% extends 'dashboard/base_doctor.html' %}
+{% load static %}
+
+{% block title %}Doctor Profile{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="mb-3 border-bottom pb-3">
+        <h4 class="fw-bold mb-0">Profile Settings</h4>
+    </div>
+    
+    <div class="card" id="profilePage">
+        <div class="card-body">
+            <div class="row">
+                
+                <div class="col-lg-3">
+                    <div class="text-start">
+                        <a href="{% url 'dashboard:doctor_profile' %}" class="d-block w-100 btn btn-md border rounded fs-14 fw-medium text-primary text-start mb-1 active w-100 justify-content-start"> 
+                            <i class="ti ti-user-cog me-2 text-primary"></i> Profile Settings 
+                        </a>
+                        <a href="{% url 'dashboard:doctor_change_password' %}" class="btn btn-md rounded fs-14 fw-medium text-dark mb-1 w-100 justify-content-start"> 
+                            <i class="ti ti-lock-star me-2 text-dark"></i> Change Password 
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-9">
+                    <div class="border-1 border-start ps-4">
+                        <form action="{% url 'dashboard:doctor_profile' %}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            <h5 class="fw-bold pb-3 mb-4 border-1 border-bottom"> Basic Information </h5>
+                            
+                            <div class="row border-bottom mb-3">
+                                <div class="col-lg-12">
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-2">
+                                            <label class="form-label mb-0">Profile Image</label>
+                                        </div>
+                                        <div class="col-lg-10">
+                                            <div class="profile-container">
+                                                {% if user.profile_picture %}
+                                                    <img src="{{ user.profile_picture.url }}" alt="Profile" id="profileImagePreview">
+                                                {% else %}
+                                                    <img src="{% static 'dashboard/assets/img/doctors/doctor-default.jpg' %}" alt="Profile" id="profileImagePreview">
+                                                {% endif %}
+                                                
+                                                <div class="overlay-btn">
+                                                    <button type="button" class="btn btn-link text-white p-0 border-0" id="uploadTrigger" style="text-decoration: none;">
+                                                        <i class="ti ti-photo fs-10"></i>
+                                                    </button>
+                                                </div>
+                                                <input type="file" id="profileUpload" name="profile_picture" accept="image/*" style="display: none;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-4">
+                                            <label class="form-label mb-0">First Name</label>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control" name="first_name" value="{{ user.first_name }}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-4">
+                                            <label class="form-label mb-0">Last Name</label>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control" name="last_name" value="{{ user.last_name }}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-4">
+                                            <label class="form-label mb-0">Email</label>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control" value="{{ user.email }}" readonly disabled>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-4">
+                                            <label class="form-label mb-0">Phone</label>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control" name="phone" value="{{ user.phone }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h5 class="fw-bold pb-3 mb-4 border-1 border-bottom text-primary"> Professional Details </h5>
+                            
+                            <div class="row mb-3">
+                                <div class="col-lg-6">
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-4">
+                                            <label class="form-label mb-0">License No.</label>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control bg-light" value="{{ profile.license_number }}" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-4">
+                                            <label class="form-label mb-0">Specialization</label>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control bg-light" value="{{ profile.specialization.name }}" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-4">
+                                            <label class="form-label mb-0">Experience (Yrs)</label>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <input type="number" class="form-control" name="experience_years" value="{{ profile.experience_years }}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-lg-4">
+                                            <label class="form-label mb-0">Consult Fee ($)</label>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <input type="number" class="form-control" name="consultation_fee" value="{{ profile.consultation_fee }}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-12">
+                                    <div class="row mb-3">
+                                        <div class="col-lg-2">
+                                            <label class="form-label mb-0 pt-2">Bio / About</label>
+                                        </div>
+                                        <div class="col-lg-10">
+                                            <textarea class="form-control" name="bio" rows="4">{{ profile.bio }}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end align-items-center gap-2">
+                                <a href="{% url 'dashboard:doctor_dashboard' %}" class="btn btn-light btn-md fs-13 fw-medium rounded"> Cancel </a>
+                                <button type="submit" class="btn btn-primary btn-md fs-13 fw-medium rounded"> Save Changes </button>
+                            </div>
+                        </form>
+                    </div>
+                </div> 
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Profile Image Upload Trigger - Fixed to work on first click
+        $('#uploadTrigger').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $('#profileUpload').trigger('click');
+        });
+        
+        // ✅ Preview selected image immediately before upload
+        $('#profileUpload').on('change', function() {
+            const file = this.files[0];
+            if (file) {
+                // Validate file type
+                if (!file.type.match('image.*')) {
+                    alert('Please select an image file.');
+                    $(this).val('');
+                    return;
+                }
+                
+                // Validate file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Image size should be less than 5MB.');
+                    $(this).val('');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#profileImagePreview').attr('src', e.target.result);
+                };
+                reader.onerror = function() {
+                    alert('Error reading file. Please try again.');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+</script>
+{% endblock %}
