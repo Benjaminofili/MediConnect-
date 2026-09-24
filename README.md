@@ -1,13 +1,13 @@
-# Telemedicine Platform
+# MediConnect
 
-A Web-Based Healthcare Consultation System designed to facilitate remote medical consultations between patients and healthcare providers. The system aims to bridge the gap between patients and doctors by leveraging modern web technologies to provide a seamless virtual healthcare experience.
+A Django REST API for remote medical consultations. Patients book appointments with doctors, join video consultations (Whereby), and receive prescriptions and medical records — all authenticated with JWT and backed by PostgreSQL.
 
-## Project Objectives
-- **Accessibility:** Enable patients to consult doctors from anywhere.
-- **Efficiency:** Streamline appointment booking and management.
-- **Security:** Ensure patient data privacy and security.
-- **Usability:** Provide intuitive interfaces for all users.
-- **Scalability:** Build a system that can grow with demand.
+## What it does
+- Patients and doctors register and authenticate separately, with role-based profiles.
+- Patients browse doctors by specialization and book from their published availability.
+- Appointments move through a booking → video consultation → prescription lifecycle, each with its own API endpoints.
+- Consultations are conducted over Whereby video rooms created per appointment.
+- Patients' medical history and uploaded documents are stored in Supabase (S3-compatible) object storage.
 
 ## Modules & Features
 - **Accounts Module:** Support for Patients, Doctors, and Administrators with JWT and session-based authentication.
@@ -25,9 +25,6 @@ A Web-Based Healthcare Consultation System designed to facilitate remote medical
 - **Storage:** Supabase Object Storage (S3 compatible)
 - **Testing:** Pytest
 
-## System Architecture
-The platform follows a three-tier architecture with separate guides for Patients, Doctors, and Administrators. 
-
 ## Installation Guide
 
 ### Prerequisites
@@ -40,8 +37,8 @@ The platform follows a three-tier architecture with separate guides for Patients
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/yourusername/telemedicine.git
-   cd telemedicine
+   git clone https://github.com/Benjaminofili/MediConnect-.git
+   cd MediConnect-
    ```
 
 2. **Create and Activate Virtual Environment**
@@ -150,3 +147,37 @@ The platform provides a RESTful API, authenticated with JWT (`djangorestframewor
 | Records | `GET /api/records/profile/`, `GET /api/records/history/`, `POST /api/records/documents/upload/` |
 
 Send `Authorization: Bearer <access_token>` (from `/api/auth/login/`) on authenticated requests. See `accounts/urls.py`, `doctors/urls.py`, `appointments/urls.py`, `consultations/urls.py`, and `records/urls.py` for the complete route list.
+
+### Example flow: booking to prescription
+
+```bash
+# 1. Log in as a patient
+curl -X POST http://localhost:8000/api/auth/login/ \
+  -H "Content-Type: application/json" \
+  -d '{"email": "patient@example.com", "password": "your-password"}'
+# -> {"access": "<jwt>", "refresh": "<jwt>", "user": {"id": 1, "email": "...", "user_type": "patient"}}
+
+# 2. Book an appointment with a doctor's open time slot
+curl -X POST http://localhost:8000/api/appointments/book/ \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"doctor_id": 3, "time_slot_id": 42, "reason": "Persistent cough"}'
+# -> {"id": 17, "status": "confirmed", "doctor": 3, "patient": 1, ...}
+
+# 3. Join the video consultation (creates the Whereby room on first call)
+curl -X GET http://localhost:8000/api/appointments/17/join/ \
+  -H "Authorization: Bearer <access_token>"
+# -> {"video_room_url": "https://mediconnect.whereby.com/..."}
+
+# 4. Doctor issues a prescription after the consultation
+curl -X POST http://localhost:8000/api/consultations/17/prescription/ \
+  -H "Authorization: Bearer <doctor_access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "diagnosis": "Acute bronchitis",
+    "items": [
+      {"medicine_name": "Amoxicillin 500mg", "dosage": "1 tablet", "frequency": "three_times_daily", "duration": "7_days"}
+    ]
+  }'
+# -> {"message": "Prescription created successfully", "prescription": {"id": 5, "prescription_number": "...", "diagnosis": "Acute bronchitis", "items": [...]}}
+```
